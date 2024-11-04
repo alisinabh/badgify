@@ -1,6 +1,7 @@
 // Import necessary libraries
 use image::{Rgba, RgbaImage};
 use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_text_mut};
+use marketh_rs::query_data;
 use rusttype::{Font, Scale};
 use std::path::Path;
 
@@ -12,8 +13,19 @@ fn load_font() -> Font<'static> {
     Font::try_from_bytes(font_data as &[u8]).expect("Error loading font")
 }
 
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Hello");
+
+    let s = query_data("evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").await?;
+
+    println!("Balance {s:?}");
+
+    Ok(())
+}
+
 // Main function to create the image
-fn main() {
+fn make_image() {
     // Set the dimensions for the image (width x height)
     let width = 100;
     let height = 20;

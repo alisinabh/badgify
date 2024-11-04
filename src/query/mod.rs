@@ -1,8 +1,9 @@
 mod bitcoin;
 mod evm;
 
-use bitcoin::BitcoinQuery;
 pub use evm::{EVMQuery, EVMQueryParseError};
+
+use bitcoin::BitcoinQuery;
 
 #[derive(Debug)]
 pub enum Query {
@@ -31,5 +32,17 @@ impl Query {
             // "bitcoin" => parse_bitcoin_query(path_params),
             invalid => Err(QueryParseError::InvalidSource(invalid.into())),
         }
+    }
+}
+
+impl std::fmt::Display for QueryParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "QueryParseError")
+    }
+}
+
+impl std::error::Error for QueryParseError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
     }
 }
