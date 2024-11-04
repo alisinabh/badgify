@@ -1,8 +1,10 @@
-use crate::utils::Uint256IteratorExt;
+use alloy::primitives::{Address, U256};
+
+use crate::utils::{EVMAddressInteratorExt, Uint256IteratorExt};
 use std::str::Split;
 
-type ChainID = num::BigUint;
-type EVMAddress = String;
+type ChainID = U256;
+type EVMAddress = Address;
 
 #[derive(Debug)]
 pub enum EVMQuery {
@@ -47,9 +49,8 @@ impl EVMQuery {
         chain_id: ChainID,
     ) -> Result<EVMQuery, EVMQueryParseError> {
         let address = path_params
-            .next()
-            .ok_or(EVMQueryParseError::BadAddress)?
-            .to_string();
+            .next_evm_address()
+            .map_err(|_| EVMQueryParseError::BadAddress)?;
 
         Ok(EVMQuery::NativeBalance { chain_id, address })
     }
@@ -59,14 +60,12 @@ impl EVMQuery {
         chain_id: ChainID,
     ) -> Result<EVMQuery, EVMQueryParseError> {
         let contract_address = path_params
-            .next()
-            .ok_or(EVMQueryParseError::BadAddress)?
-            .to_string();
+            .next_evm_address()
+            .map_err(|_| EVMQueryParseError::BadAddress)?;
 
         let address = path_params
-            .next()
-            .ok_or(EVMQueryParseError::BadAddress)?
-            .to_string();
+            .next_evm_address()
+            .map_err(|_| EVMQueryParseError::BadAddress)?;
 
         Ok(EVMQuery::ERC20Balance {
             chain_id,
