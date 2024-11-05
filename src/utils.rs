@@ -19,7 +19,7 @@ pub fn parse_u256(value: &str) -> Result<U256, ParseU256Error> {
         return parse_u256_hex(value);
     }
 
-    if value.trim().len() == 0 {
+    if value.trim().is_empty() {
         return Err(ParseU256Error::InvalidU256String);
     }
 
@@ -29,7 +29,7 @@ pub fn parse_u256(value: &str) -> Result<U256, ParseU256Error> {
 pub fn parse_u256_hex(hex_value: &str) -> Result<U256, ParseU256Error> {
     let hex_str = hex_value.trim_start_matches("0x");
 
-    if hex_str.trim().len() == 0 {
+    if hex_str.trim().is_empty() {
         return Err(ParseU256Error::InvalidU256Hex);
     }
 

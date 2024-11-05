@@ -1,5 +1,5 @@
 mod bitcoin;
-mod evm;
+pub mod evm;
 
 pub use evm::{EVMQuery, EVMQueryParseError};
 
@@ -27,7 +27,7 @@ impl Query {
 
         match source_type.to_lowercase().as_str() {
             "evm" => Ok(Query::EVM(
-                EVMQuery::parse(path_params).map_err(|e| QueryParseError::EVMQueryParseError(e))?,
+                EVMQuery::parse(path_params).map_err(QueryParseError::EVMQueryParseError)?,
             )),
             // "bitcoin" => parse_bitcoin_query(path_params),
             invalid => Err(QueryParseError::InvalidSource(invalid.into())),

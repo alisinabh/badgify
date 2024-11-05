@@ -1,10 +1,6 @@
-use alloy::primitives::{Address, U256};
-
+use crate::types::{ChainID, EVMAddress};
 use crate::utils::{EVMAddressInteratorExt, Uint256IteratorExt};
 use std::str::Split;
-
-type ChainID = U256;
-type EVMAddress = Address;
 
 #[derive(Debug)]
 pub enum EVMQuery {
@@ -40,7 +36,7 @@ impl EVMQuery {
         {
             "balance" => Ok(Self::parse_native_balance(path_params, chain_id)?),
             "erc20_balance" => Ok(Self::parse_erc20_balance(path_params, chain_id)?),
-            _ => return Err(EVMQueryParseError::BadType),
+            _ => Err(EVMQueryParseError::BadType),
         }
     }
 

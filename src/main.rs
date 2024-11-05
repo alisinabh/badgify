@@ -1,7 +1,7 @@
 // Import necessary libraries
 use image::{Rgba, RgbaImage};
-use imageproc::drawing::{draw_filled_circle_mut, draw_filled_rect_mut, draw_text_mut};
-use marketh_rs::query_data;
+use imageproc::drawing::{draw_filled_rect_mut, draw_text_mut};
+use marketh_rs::Executor;
 use rusttype::{Font, Scale};
 use std::path::Path;
 
@@ -17,7 +17,17 @@ fn load_font() -> Font<'static> {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Hello");
 
-    let s = query_data("evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").await?;
+    let executor = Executor::new();
+
+    let s = executor
+        .query_data("evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
+        .await?;
+
+    println!("Balance {s:?}");
+
+    let s = executor
+        .query_data("evm/1/erc20_balance/0xF2ec4a773ef90c58d98ea734c0eBDB538519b988/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
+        .await?;
 
     println!("Balance {s:?}");
 
@@ -43,7 +53,7 @@ fn make_image() {
 
     // Load the PNG logo
     let logo_path = Path::new("logo.png"); // Put your logo in the project directory
-    let logo = image::open(&logo_path).expect("Failed to load image");
+    let logo = image::open(logo_path).expect("Failed to load image");
 
     // Resize the logo and overlay it on the background
     let resized_logo = logo.resize(16, 16, image::imageops::FilterType::Lanczos3);
