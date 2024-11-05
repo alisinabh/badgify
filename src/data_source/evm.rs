@@ -64,7 +64,10 @@ impl EVMDataSource {
     ) -> Result<SourceResponse, Box<dyn Error>> {
         self.try_with_rpc_urls_provider(chain_id, move |provider| async move {
             match provider.get_balance(address).await {
-                Ok(res) => Ok(SourceResponse::Decimal(res, ETH_DECIMALS)),
+                Ok(res) => Ok(SourceResponse::Decimal {
+                    value: res,
+                    decimals: ETH_DECIMALS,
+                }),
                 Err(err) => Err(Box::new(err) as Box<dyn Error>),
             }
         })
@@ -108,7 +111,10 @@ impl EVMDataSource {
                             ERC20::balanceOfCall::abi_decode_returns(&balance, true)?.balance;
                         let decimals =
                             ERC20::decimalsCall::abi_decode_returns(&decimals, true)?.decimals;
-                        Ok(SourceResponse::Decimal(balance, decimals))
+                        Ok(SourceResponse::Decimal {
+                            value: balance,
+                            decimals,
+                        })
                     }
                     err => Err(format!("Failed to get balance or decimals {err:?}").into()),
                 }

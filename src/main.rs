@@ -13,24 +13,26 @@ fn load_font() -> Font<'static> {
     Font::try_from_bytes(font_data as &[u8]).expect("Error loading font")
 }
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Hello");
+    marketh_rs::start_server("127.0.0.1", 4008).await;
 
-    let executor = Executor::new();
-
-    let s = executor
-        .query_data("evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
-        .await?;
-
-    println!("Balance {s:?}");
-
-    let s = executor
-        .query_data("evm/1/erc20_balance/0xF2ec4a773ef90c58d98ea734c0eBDB538519b988/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
-        .await?;
-
-    println!("Balance {s:?}");
-
+    // println!("Hello");
+    //
+    // let executor = Executor::new();
+    //
+    // let s = executor
+    //     .query_data("evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
+    //     .await?;
+    //
+    // println!("Balance {s:?}");
+    //
+    // let s = executor
+    //     .query_data("evm/1/erc20_balance/0xF2ec4a773ef90c58d98ea734c0eBDB538519b988/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045")
+    //     .await?;
+    //
+    // println!("Balance {s:?}");
+    //
     Ok(())
 }
 
