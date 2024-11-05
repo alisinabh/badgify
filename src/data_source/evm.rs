@@ -11,7 +11,7 @@ use alloy::{
     sol_types::SolCall,
 };
 
-use crate::{evm_chainlist, query::EVMQuery, types::ChainID};
+use crate::{evm_chainlist::EVMChainList, query::EVMQuery, types::ChainID};
 
 use super::SourceResponse;
 
@@ -30,12 +30,14 @@ sol! {
 
 pub struct EVMDataSource {
     last_known_good_rpc_urls: Arc<RwLock<HashMap<ChainID, String>>>,
+    chain_list: EVMChainList,
 }
 
 impl Default for EVMDataSource {
     fn default() -> Self {
         Self {
             last_known_good_rpc_urls: Arc::new(HashMap::new().into()),
+            chain_list: EVMChainList::default(),
         }
     }
 }
@@ -175,7 +177,9 @@ impl EVMDataSource {
         Fut: Future<Output = Result<T, Box<dyn Error>>> + Send + 'static,
         T: Send + 'static,
     {
-        let chain = evm_chainlist::fetch_evm_chain(chain_id)
+        let chain = self
+            .chain_list
+            .fetch_evm_chain(chain_id)
             .await?
             .ok_or("Chain not found!")?;
 
