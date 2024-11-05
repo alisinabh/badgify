@@ -1,5 +1,4 @@
 use actix_web::{get, web, HttpResponse, Responder};
-use alloy::primitives::U256;
 
 use crate::Executor;
 
