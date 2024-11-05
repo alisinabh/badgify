@@ -18,17 +18,21 @@ pub struct EvmChain {
     pub name: String,
     pub chain: String,
     pub icon: Option<String>,
+    #[serde(skip_serializing)]
     pub rpc: Vec<String>,
-    pub features: Option<Vec<Feature>>,
-    pub faucets: Vec<String>,
+    // #[serde(skip_serializing)]
+    // pub features: Option<Vec<Feature>>,
+    // #[serde(skip_serializing)]
+    // pub faucets: Vec<String>,
     pub native_currency: NativeCurrency,
-    pub info_url: Option<String>,
+    // pub info_url: Option<String>,
     pub short_name: String,
     pub chain_id: U256,
     pub network_id: U256,
     pub slip44: Option<u64>,
-    pub ens: Option<Ens>,
-    pub explorers: Option<Vec<Explorer>>,
+    // pub ens: Option<Ens>,
+    // #[serde(skip_serializing)]
+    // pub explorers: Option<Vec<Explorer>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -38,9 +42,9 @@ pub struct Feature {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NativeCurrency {
-    name: String,
-    symbol: String,
-    decimals: u8,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

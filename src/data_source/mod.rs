@@ -1,6 +1,8 @@
 mod evm;
+mod evm_metadata;
 
 use alloy::primitives::U256;
+use evm_metadata::EVMMetadata;
 
 use crate::query::Query;
 use serde::{ser::SerializeMap, Serialize};
@@ -10,6 +12,24 @@ use std::error::Error;
 pub enum SourceResponse {
     Decimal { value: U256, decimals: u8 },
     AlphaNumeric { value: String },
+}
+
+#[derive(Serialize)]
+pub struct SourceResponseWithMetadata {
+    result: SourceResponse,
+    metadata: SourceMetadata,
+}
+
+impl SourceResponseWithMetadata {
+    fn new(result: SourceResponse, metadata: SourceMetadata) -> Self {
+        Self { result, metadata }
+    }
+}
+
+#[derive(Serialize)]
+#[serde(tag = "type")]
+pub enum SourceMetadata {
+    EVM(EVMMetadata),
 }
 
 impl Serialize for SourceResponse {
@@ -78,7 +98,10 @@ impl Default for DataSource {
 }
 
 impl DataSource {
-    pub async fn get_data(&self, query: Query) -> Result<SourceResponse, Box<dyn Error>> {
+    pub async fn get_data(
+        &self,
+        query: Query,
+    ) -> Result<SourceResponseWithMetadata, Box<dyn Error>> {
         match query {
             Query::EVM(evm_query) => self.evm_data_source.get_data(evm_query).await,
             Query::Bitcoin(_bitcoin_query) => todo!(),

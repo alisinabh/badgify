@@ -7,7 +7,7 @@ mod evm_chainlist;
 mod services;
 
 use actix_web::{web, App, HttpServer};
-use data_source::{DataSource, SourceResponse};
+use data_source::{DataSource, SourceResponseWithMetadata};
 use query::Query;
 
 pub struct Executor {
@@ -24,7 +24,7 @@ impl Executor {
     pub async fn query_data(
         &self,
         path: &str,
-    ) -> Result<SourceResponse, Box<dyn std::error::Error>> {
+    ) -> Result<SourceResponseWithMetadata, Box<dyn std::error::Error>> {
         let query = Query::parse_path(path)?;
         self.data_source.get_data(query).await
     }
