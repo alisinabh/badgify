@@ -2,7 +2,7 @@ use std::{
     sync::Arc,
     time::{SystemTime, SystemTimeError},
 };
-use tokio::sync::RwLock;
+use tokio::sync::{RwLock, RwLockReadGuard};
 
 use alloy::primitives::U256;
 use serde::{Deserialize, Serialize};
@@ -64,7 +64,7 @@ pub struct EvmChainList {
     data: Arc<RwLock<EvmChainListData>>,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct EvmChainListData {
     list: Option<Vec<EvmChain>>,
     last_fetch_at: Option<SystemTime>,
@@ -93,28 +93,45 @@ impl EvmChainList {
         &self,
         chain_id: ChainID,
     ) -> Result<Option<EvmChain>, Box<dyn std::error::Error>> {
-        self.fetch_chain_list().await.unwrap();
-
-        let data_read = self.data.read().await;
-
+        let data_read = self.fetch_chain_list().await?;
         Ok(data_read.get_chain(chain_id))
     }
 
-    async fn fetch_chain_list(&self) -> Result<(), SystemTimeError> {
-        let fetch_db = if let Some(last_fetched_at) = self.data.read().await.last_fetch_at {
-            SystemTime::now().duration_since(last_fetched_at)?.as_secs() > REFRESH_INTERVAL
-        } else {
-            true
+    async fn fetch_chain_list(
+        &self,
+    ) -> Result<RwLockReadGuard<'_, EvmChainListData>, SystemTimeError> {
+        let chain_list_data = {
+            let chainlist_data = self.data.read().await;
+
+            let refresh_required = match chainlist_data.last_fetch_at {
+                Some(last_fetched_at) => {
+                    SystemTime::now().duration_since(last_fetched_at)?.as_secs() > REFRESH_INTERVAL
+                }
+                None => true,
+            };
+
+            if refresh_required {
+                None
+            } else {
+                Some(chainlist_data)
+            }
         };
 
-        if fetch_db {
-            let new_chain_list_data = fetch_evm_chainlist().await.unwrap();
-            let mut chain_list_data = self.data.write().await;
-            chain_list_data.list = Some(new_chain_list_data);
-            chain_list_data.last_fetch_at = Some(SystemTime::now());
+        match chain_list_data {
+            Some(chain_list_data) => Ok(chain_list_data),
+            None => Ok(self.update_chain_list().await),
         }
+    }
 
-        Ok(())
+    async fn update_chain_list(&self) -> RwLockReadGuard<'_, EvmChainListData> {
+        let new_chain_list_data = fetch_evm_chainlist().await.unwrap();
+
+        let mut chain_list_data = self.data.write().await;
+        chain_list_data.list = Some(new_chain_list_data);
+        chain_list_data.last_fetch_at = Some(SystemTime::now());
+
+        // Downgrade the write lock to a read lock and return it
+        chain_list_data.downgrade()
     }
 }
 
