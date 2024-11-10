@@ -1,4 +1,4 @@
 use alloy::primitives::{Address, U256};
 
 pub type ChainID = U256;
-pub type EVMAddress = Address;
+pub type EvmAddress = Address;

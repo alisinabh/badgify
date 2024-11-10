@@ -1,5 +1,5 @@
 use alloy::primitives::{address, U256};
-use marketh_rs::query::{EVMQuery, Query};
+use marketh_rs::query::{EvmQuery, Query};
 
 #[test]
 fn test_parsing_valid_evm_balance_query() {
@@ -7,7 +7,7 @@ fn test_parsing_valid_evm_balance_query() {
 
     assert!(matches!(
         res,
-        Ok(Query::EVM(EVMQuery::NativeBalance {
+        Ok(Query::Evm(EvmQuery::NativeBalance {
             chain_id,
             address,
         })) if chain_id == U256::from(1_u8) &&
@@ -21,7 +21,7 @@ fn test_parsing_valid_evm_erc20_query() {
 
     assert!(matches!(
         res,
-        Ok(Query::EVM(EVMQuery::ERC20Balance {
+        Ok(Query::Evm(EvmQuery::ERC20Balance {
             chain_id,
             contract_address,
             address,

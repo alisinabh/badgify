@@ -12,13 +12,13 @@ use alloy::{
 };
 
 use crate::{
-    evm_chainlist::{EVMChainList, EvmChain},
-    query::EVMQuery,
+    evm_chainlist::{EvmChain, EvmChainList},
+    query::EvmQuery,
     types::ChainID,
 };
 
 use super::{
-    evm_metadata::{EVMMetadata, EVMSource},
+    evm_metadata::{EvmMetadata, EvmSource},
     SourceMetadata, SourceResponse, SourceResponseWithMetadata,
 };
 
@@ -38,30 +38,30 @@ sol! {
     }
 }
 
-pub struct EVMDataSource {
+pub struct EvmDataSource {
     last_known_good_rpc_urls: Arc<RwLock<HashMap<ChainID, String>>>,
-    chain_list: EVMChainList,
+    chain_list: EvmChainList,
 }
 
-impl Default for EVMDataSource {
+impl Default for EvmDataSource {
     fn default() -> Self {
         Self {
             last_known_good_rpc_urls: Arc::new(HashMap::new().into()),
-            chain_list: EVMChainList::default(),
+            chain_list: EvmChainList::default(),
         }
     }
 }
 
-impl EVMDataSource {
+impl EvmDataSource {
     pub async fn get_data(
         &self,
-        evm_query: EVMQuery,
+        evm_query: EvmQuery,
     ) -> Result<SourceResponseWithMetadata, Box<dyn Error>> {
         match evm_query {
-            EVMQuery::NativeBalance { chain_id, address } => {
+            EvmQuery::NativeBalance { chain_id, address } => {
                 self.get_native_balance(chain_id, address).await
             }
-            EVMQuery::ERC20Balance {
+            EvmQuery::ERC20Balance {
                 chain_id,
                 address,
                 contract_address,
@@ -87,9 +87,9 @@ impl EVMDataSource {
 
                     let symbol = chain.native_currency.symbol.clone();
 
-                    let metadata = SourceMetadata::EVM(EVMMetadata::new(
+                    let metadata = SourceMetadata::Evm(EvmMetadata::new(
                         chain,
-                        EVMSource::NativeCurrency { symbol },
+                        EvmSource::NativeCurrency { symbol },
                     ));
 
                     Ok(SourceResponseWithMetadata::new(result, metadata))
@@ -140,7 +140,7 @@ impl EVMDataSource {
                 )
                 .unwrap();
 
-            if let Ok(_) = batch.send().await {
+            if batch.send().await.is_ok() {
                 match (balance_fut.await, decimals_fut.await, symbol_fut.await) {
                     (Ok(balance), Ok(decimals), Ok(symbol)) => {
                         let balance =
@@ -154,9 +154,9 @@ impl EVMDataSource {
                             decimals,
                         };
 
-                        let metadata = SourceMetadata::EVM(EVMMetadata::new(
+                        let metadata = SourceMetadata::Evm(EvmMetadata::new(
                             chain,
-                            EVMSource::ERC20 {
+                            EvmSource::ERC20 {
                                 symbol,
                                 contract_address,
                             },

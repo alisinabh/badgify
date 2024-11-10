@@ -53,11 +53,11 @@ where
     }
 }
 
-pub trait EVMAddressInteratorExt {
+pub trait EvmAddressInteratorExt {
     fn next_evm_address(&mut self) -> Result<Address, ParseAddressError>;
 }
 
-impl<I, S> EVMAddressInteratorExt for I
+impl<I, S> EvmAddressInteratorExt for I
 where
     I: Iterator<Item = S>,
     S: AsRef<str>,

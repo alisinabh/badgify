@@ -60,33 +60,25 @@ pub struct Explorer {
     standard: String,
 }
 
-pub struct EVMChainList {
-    data: Arc<RwLock<EVMChainListData>>,
+pub struct EvmChainList {
+    data: Arc<RwLock<EvmChainListData>>,
 }
 
-pub struct EVMChainListData {
+#[derive(Default)]
+pub struct EvmChainListData {
     list: Option<Vec<EvmChain>>,
     last_fetch_at: Option<SystemTime>,
 }
 
-impl Default for EVMChainList {
+impl Default for EvmChainList {
     fn default() -> Self {
         Self {
-            data: Arc::new(RwLock::new(EVMChainListData::default())),
+            data: Arc::new(RwLock::new(EvmChainListData::default())),
         }
     }
 }
 
-impl Default for EVMChainListData {
-    fn default() -> Self {
-        Self {
-            list: None,
-            last_fetch_at: None,
-        }
-    }
-}
-
-impl EVMChainListData {
+impl EvmChainListData {
     pub fn get_chain(&self, chain_id: ChainID) -> Option<EvmChain> {
         if let Some(chain_list) = &self.list {
             chain_list.iter().find(|c| c.chain_id == chain_id).cloned()
@@ -96,7 +88,7 @@ impl EVMChainListData {
     }
 }
 
-impl EVMChainList {
+impl EvmChainList {
     pub async fn fetch_evm_chain(
         &self,
         chain_id: ChainID,
@@ -116,8 +108,9 @@ impl EVMChainList {
         };
 
         if fetch_db {
+            let new_chain_list_data = fetch_evm_chainlist().await.unwrap();
             let mut chain_list_data = self.data.write().unwrap();
-            chain_list_data.list = Some(fetch_evm_chainlist().await.unwrap());
+            chain_list_data.list = Some(new_chain_list_data);
             chain_list_data.last_fetch_at = Some(SystemTime::now());
         }
 

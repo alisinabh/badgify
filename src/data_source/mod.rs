@@ -2,7 +2,7 @@ mod evm;
 mod evm_metadata;
 
 use alloy::primitives::U256;
-use evm_metadata::EVMMetadata;
+use evm_metadata::EvmMetadata;
 
 use crate::query::Query;
 use serde::{ser::SerializeMap, Serialize};
@@ -29,7 +29,7 @@ impl SourceResponseWithMetadata {
 #[derive(Serialize)]
 #[serde(tag = "type")]
 pub enum SourceMetadata {
-    EVM(EVMMetadata),
+    Evm(EvmMetadata),
 }
 
 impl Serialize for SourceResponse {
@@ -49,7 +49,7 @@ impl Serialize for SourceResponse {
                 map.serialize_entry("formatted", formatted)?;
                 map.serialize_entry(
                     "formatted_tiny",
-                    &to_tiny(value, &formatted).map_err(|e| serde::ser::Error::custom(e))?,
+                    &to_tiny(value, formatted).map_err(serde::ser::Error::custom)?,
                 )?;
                 map.end()
             }
@@ -71,11 +71,11 @@ fn to_tiny(value: &U256, formatted: &str) -> Result<String, String> {
 
         match partial.trim_end_matches("0") {
             s if s.is_empty() && full == "0" && value.to::<u32>() != 0 => Ok("~0".to_string()),
-            s if s.is_empty() => Ok(full.to_string()),
+            "" => Ok(full.to_string()),
             s => {
                 let mut res = full.to_string();
                 res.push('.');
-                res.push_str(&s);
+                res.push_str(s);
 
                 Ok(res)
             }
@@ -85,16 +85,9 @@ fn to_tiny(value: &U256, formatted: &str) -> Result<String, String> {
     }
 }
 
+#[derive(Default)]
 pub struct DataSource {
-    evm_data_source: evm::EVMDataSource,
-}
-
-impl Default for DataSource {
-    fn default() -> Self {
-        Self {
-            evm_data_source: evm::EVMDataSource::default(),
-        }
-    }
+    evm_data_source: evm::EvmDataSource,
 }
 
 impl DataSource {
@@ -103,7 +96,7 @@ impl DataSource {
         query: Query,
     ) -> Result<SourceResponseWithMetadata, Box<dyn Error>> {
         match query {
-            Query::EVM(evm_query) => self.evm_data_source.get_data(evm_query).await,
+            Query::Evm(evm_query) => self.evm_data_source.get_data(evm_query).await,
             Query::Bitcoin(_bitcoin_query) => todo!(),
         }
     }

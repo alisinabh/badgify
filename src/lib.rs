@@ -1,8 +1,8 @@
+pub mod data_source;
 pub mod query;
 pub mod types;
 pub mod utils;
 
-mod data_source;
 mod evm_chainlist;
 mod services;
 
@@ -12,6 +12,12 @@ use query::Query;
 
 pub struct Executor {
     data_source: DataSource,
+}
+
+impl Default for Executor {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Executor {
