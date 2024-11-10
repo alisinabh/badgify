@@ -1,4 +1,5 @@
-use std::{collections::HashMap, error::Error, future::Future, sync::Arc, sync::RwLock};
+use std::{collections::HashMap, error::Error, future::Future, sync::Arc};
+use tokio::sync::RwLock;
 
 use alloy::{
     primitives::{Address, Bytes},
@@ -232,7 +233,7 @@ impl EvmDataSource {
 
         let mut rpc_urls = chain.rpc.clone();
 
-        if let Some(rpc_url) = self.get_good_rpc_url(chain_id) {
+        if let Some(rpc_url) = self.get_good_rpc_url(chain_id).await {
             rpc_urls.insert(0, rpc_url);
         }
 
@@ -245,7 +246,7 @@ impl EvmDataSource {
 
             match predicate(chain.clone(), rpc_url.to_string()).await {
                 Ok(result) => {
-                    self.set_good_rpc_url(chain_id, rpc_url);
+                    self.set_good_rpc_url(chain_id, rpc_url).await;
                     return Ok(result);
                 }
 
@@ -256,8 +257,8 @@ impl EvmDataSource {
         Err("No active RPC URLs for chain".into())
     }
 
-    fn set_good_rpc_url(&self, chain_id: ChainID, rpc_url: &str) {
-        let should_update = match self.last_known_good_rpc_urls.read().unwrap().get(&chain_id) {
+    async fn set_good_rpc_url(&self, chain_id: ChainID, rpc_url: &str) {
+        let should_update = match self.last_known_good_rpc_urls.read().await.get(&chain_id) {
             Some(existing) => existing != rpc_url,
             None => true,
         };
@@ -265,16 +266,16 @@ impl EvmDataSource {
         if should_update {
             self.last_known_good_rpc_urls
                 .write()
-                .unwrap()
+                .await
                 .insert(chain_id, rpc_url.to_string());
         }
     }
 
-    fn get_good_rpc_url(&self, chain_id: ChainID) -> Option<String> {
+    async fn get_good_rpc_url(&self, chain_id: ChainID) -> Option<String> {
         let res = self
             .last_known_good_rpc_urls
             .read()
-            .unwrap()
+            .await
             .get(&chain_id)
             .cloned();
         res

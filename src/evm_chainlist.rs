@@ -1,8 +1,8 @@
 use std::{
     sync::Arc,
-    sync::RwLock,
     time::{SystemTime, SystemTimeError},
 };
+use tokio::sync::RwLock;
 
 use alloy::primitives::U256;
 use serde::{Deserialize, Serialize};
@@ -95,13 +95,13 @@ impl EvmChainList {
     ) -> Result<Option<EvmChain>, Box<dyn std::error::Error>> {
         self.fetch_chain_list().await.unwrap();
 
-        let data_read = self.data.read().unwrap();
+        let data_read = self.data.read().await;
 
         Ok(data_read.get_chain(chain_id))
     }
 
     async fn fetch_chain_list(&self) -> Result<(), SystemTimeError> {
-        let fetch_db = if let Some(last_fetched_at) = self.data.read().unwrap().last_fetch_at {
+        let fetch_db = if let Some(last_fetched_at) = self.data.read().await.last_fetch_at {
             SystemTime::now().duration_since(last_fetched_at)?.as_secs() > REFRESH_INTERVAL
         } else {
             true
@@ -109,7 +109,7 @@ impl EvmChainList {
 
         if fetch_db {
             let new_chain_list_data = fetch_evm_chainlist().await.unwrap();
-            let mut chain_list_data = self.data.write().unwrap();
+            let mut chain_list_data = self.data.write().await;
             chain_list_data.list = Some(new_chain_list_data);
             chain_list_data.last_fetch_at = Some(SystemTime::now());
         }
