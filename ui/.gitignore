@@ -1,9 +1,4 @@
-/.git
-/target
-
-*.ttf
-*.png
-
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -12,10 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-/ui/node_modules
-/ui/dist
-/ui/dist-ssr
-/ui/*.local
+node_modules
+dist
+dist-ssr
+*.local
 
 # Editor directories and files
 .vscode/*

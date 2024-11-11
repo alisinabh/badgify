@@ -1,0 +1,150 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Wallet, Coins } from 'lucide-react'
+import { EthereumBadge, BitcoinBadge } from "cryptocons"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+export default function CryptoShieldGenerator() {
+  const [selectedChain, setSelectedChain] = useState('ethereum')
+  const [balanceType, setBalanceType] = useState('eth')
+  const [address, setAddress] = useState('')
+  const [tokenAddress, setTokenAddress] = useState('')
+  const [badgeUrl, setBadgeUrl] = useState('')
+
+  useEffect(() => {
+    if (address) {
+      const chainId = '1' // Ethereum mainnet
+      let url = ''
+      if (selectedChain === 'ethereum') {
+        if (balanceType === 'eth') {
+          url = `https://marketh.fly.dev/badge/evm/${chainId}/balance/${address}`
+        } else if (balanceType === 'erc20' && tokenAddress) {
+          url = `https://marketh.fly.dev/badge/evm/${chainId}/erc20_balance/${tokenAddress}/${address}`
+        }
+      }
+      setBadgeUrl(url)
+    } else {
+      setBadgeUrl('')
+    }
+  }, [selectedChain, balanceType, address, tokenAddress])
+
+  return (
+    <Card className="max-w-2xl mx-auto bg-white">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-gray-900">Generate Your Crypto Badge</CardTitle>
+        <CardDescription className="text-gray-500">
+          Create a dynamic badge showing cryptocurrency balances for any address
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-gray-700">Select Blockchain</Label>
+          <RadioGroup
+            defaultValue="ethereum"
+            onValueChange={setSelectedChain}
+            className="grid grid-cols-2 gap-4"
+          >
+            <Label
+              htmlFor="ethereum"
+              className="flex flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-white p-4 hover:bg-gray-50 [&:has([data-state=checked])]:border-blue-600"
+            >
+              <RadioGroupItem value="ethereum" id="ethereum" className="sr-only" />
+              <EthereumBadge className="mb-3 h-8 w-8" />
+              <span className="text-sm font-medium text-gray-900">Ethereum</span>
+            </Label>
+            <Label
+              htmlFor="bitcoin"
+              className="flex flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-not-allowed opacity-50"
+            >
+              <RadioGroupItem value="bitcoin" id="bitcoin" className="sr-only" disabled />
+              <BitcoinBadge className="mb-3 h-8 w-8" />
+              <span className="text-sm font-medium text-gray-900">Bitcoin (Coming Soon)</span>
+            </Label>
+          </RadioGroup>
+        </div>
+
+        {selectedChain === 'ethereum' && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700">Balance Type</Label>
+            <Select defaultValue="eth" onValueChange={setBalanceType}>
+              <SelectTrigger className="w-full bg-white border-gray-300">
+                <SelectValue placeholder="Select balance type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="eth">ETH Balance</SelectItem>
+                <SelectItem value="erc20">ERC20 Token Balance</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {selectedChain === 'ethereum' && balanceType === 'erc20' && (
+          <div className="space-y-2">
+            <Label htmlFor="tokenAddress" className="text-sm font-medium text-gray-700">ERC20 Token Contract Address</Label>
+            <div className="relative">
+              <Coins className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+              <Input
+                id="tokenAddress"
+                placeholder="Enter ERC20 token contract address"
+                value={tokenAddress}
+                onChange={(e) => setTokenAddress(e.target.value)}
+                className="pl-9 bg-white border-gray-300"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="address" className="text-sm font-medium text-gray-700">Wallet Address</Label>
+          <div className="relative">
+            <Wallet className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+            <Input
+              id="address"
+              placeholder={`Enter ${selectedChain} address`}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="pl-9 bg-white border-gray-300"
+            />
+          </div>
+        </div>
+
+        <Tabs defaultValue="preview" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+            <TabsTrigger value="preview" className="bg-gray data-[state=active]:bg-white">Preview</TabsTrigger>
+            <TabsTrigger value="markdown" className="bg-gray data-[state=active]:bg-white">Markdown</TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview" className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4">
+            <div className="flex justify-center py-4">
+              {badgeUrl ? (
+                <img src={badgeUrl} alt="Crypto Balance Badge" />
+              ) : (
+                <p className="text-gray-500">Enter an address to generate a badge</p>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent value="markdown" className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4">
+            <Input
+              readOnly
+              value={badgeUrl ? `![${selectedChain} Balance](${badgeUrl})` : ''}
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+              className="bg-gray-50 border-gray-300"
+            />
+            <p className="text-sm text-gray-500 text-center">
+              {badgeUrl ? 'Click to copy the markdown code' : 'Enter an address to generate markdown'}
+            </p>
+          </TabsContent>
+        </Tabs>
+
+        <div className="text-center text-sm text-gray-500">
+          <p>CryptoShield: Your go-to tool for dynamic cryptocurrency balance badges</p>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
