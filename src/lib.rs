@@ -1,3 +1,4 @@
+pub mod badge;
 pub mod data_source;
 pub mod query;
 pub mod types;
@@ -43,6 +44,7 @@ pub async fn start_server(host: &str, port: u16) {
             .app_data(web::Data::new(Executor::new()))
             .service(services::api::health)
             .service(services::api::query)
+            .service(services::badge::badge)
     })
     .bind((host, port))
     .expect("Cannot bind to specified host and port")

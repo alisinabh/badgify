@@ -16,8 +16,8 @@ pub enum SourceResponse {
 
 #[derive(Serialize)]
 pub struct SourceResponseWithMetadata {
-    result: SourceResponse,
-    metadata: SourceMetadata,
+    pub result: SourceResponse,
+    pub metadata: SourceMetadata,
 }
 
 impl SourceResponseWithMetadata {
@@ -30,6 +30,26 @@ impl SourceResponseWithMetadata {
 #[serde(tag = "type")]
 pub enum SourceMetadata {
     Evm(EvmMetadata),
+}
+
+impl SourceMetadata {
+    pub fn symbol(&self) -> String {
+        match self {
+            Self::Evm(evm_metadata) => evm_metadata.symbol(),
+        }
+    }
+
+    pub fn label(&self) -> Option<String> {
+        match self {
+            Self::Evm(evm_metadata) => evm_metadata.label(),
+        }
+    }
+
+    pub fn logo(&self) -> Option<String> {
+        match self {
+            Self::Evm(evm_metadata) => evm_metadata.logo(),
+        }
+    }
 }
 
 impl Serialize for SourceResponse {
@@ -59,6 +79,25 @@ impl Serialize for SourceResponse {
                 map.serialize_entry("value", &value)?;
                 map.end()
             }
+        }
+    }
+}
+
+impl SourceResponse {
+    pub fn formatted_tiny(&self) -> String {
+        match self {
+            Self::Decimal { value, decimals } => {
+                let formatted = match alloy::primitives::utils::format_units(*value, *decimals) {
+                    Ok(formatted) => formatted,
+                    Err(e) => {
+                        print!("Failed to format {self:?}: {e:?}");
+                        value.to_string()
+                    }
+                };
+
+                to_tiny(value, &formatted).unwrap_or("-".to_string())
+            }
+            Self::AlphaNumeric { value } => value.to_string(),
         }
     }
 }
