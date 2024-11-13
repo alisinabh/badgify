@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Wallet, Coins, LucideAlignEndVertical } from "lucide-react";
+import { Wallet, Coins } from "lucide-react";
 import { EthereumBadge, BitcoinBadge } from "cryptocons";
 import {
   Card,
