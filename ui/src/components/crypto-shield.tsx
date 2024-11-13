@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/select";
 import { ChainSelector } from "./chain-selector";
 
+const BASE_URL = "https://marketh.fly.dev";
+const BADGE_BASE_URL = `${BASE_URL}/badge`;
+
 export default function CryptoShieldGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
   const [balanceType, setBalanceType] = useState("eth");
@@ -30,22 +33,25 @@ export default function CryptoShieldGenerator() {
   const [tokenAddress, setTokenAddress] = useState("");
   const [badgeUrl, setBadgeUrl] = useState("");
   const [chainId, setChainId] = useState(1); // Default to Ethereum mainnet
+  const [btcNetwork, setBtcNetwork] = useState("mainnet");
 
   useEffect(() => {
     if (address) {
       let url = "";
       if (selectedChain === "ethereum") {
         if (balanceType === "eth") {
-          url = `https://marketh.fly.dev/badge/evm/${chainId}/balance/${address}`;
+          url = `evm/${chainId}/balance/${address}`;
         } else if (balanceType === "erc20" && tokenAddress) {
-          url = `https://marketh.fly.dev/badge/evm/${chainId}/erc20_balance/${tokenAddress}/${address}`;
+          url = `evm/${chainId}/erc20_balance/${tokenAddress}/${address}`;
         }
+      } else if (selectedChain === "bitcoin") {
+        url = `btc/${btcNetwork}/balance/${address}`;
       }
-      setBadgeUrl(url);
+      setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
     } else {
       setBadgeUrl("");
     }
-  }, [selectedChain, balanceType, address, tokenAddress, chainId]);
+  }, [selectedChain, balanceType, address, tokenAddress, chainId, btcNetwork]);
 
   return (
     <Card className="max-w-2xl mx-auto bg-white">
@@ -83,18 +89,15 @@ export default function CryptoShieldGenerator() {
             </Label>
             <Label
               htmlFor="bitcoin"
-              className="flex flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-white p-4 hover:bg-gray-50 cursor-not-allowed opacity-50"
+              className="flex flex-col items-center justify-between rounded-md border-2 border-gray-200 bg-white p-4 hover:bg-gray-50 [&:has([data-state=checked])]:border-blue-600"
             >
               <RadioGroupItem
                 value="bitcoin"
                 id="bitcoin"
                 className="sr-only"
-                disabled
               />
               <BitcoinBadge className="mb-3 h-8 w-8" />
-              <span className="text-sm font-medium text-gray-900">
-                Bitcoin (Coming Soon)
-              </span>
+              <span className="text-sm font-medium text-gray-900">Bitcoin</span>
             </Label>
           </RadioGroup>
         </div>
@@ -144,6 +147,24 @@ export default function CryptoShieldGenerator() {
               </div>
             )}
           </>
+        )}
+
+        {selectedChain === "bitcoin" && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700">
+              Select Network
+            </Label>
+            <Select defaultValue="mainnet" onValueChange={setBtcNetwork}>
+              <SelectTrigger className="w-full bg-white border-gray-300">
+                <SelectValue placeholder="Select Bitcoin network" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mainnet">Mainnet</SelectItem>
+                <SelectItem value="testnet">Testnet</SelectItem>
+                <SelectItem value="signet">Signet</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         )}
 
         <div className="space-y-2">
