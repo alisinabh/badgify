@@ -1,5 +1,5 @@
 use alloy::primitives::{address, U256};
-use marketh_rs::query::{EvmQuery, Query};
+use badgify_rs::query::{EvmQuery, Query};
 
 #[test]
 fn test_parsing_valid_evm_balance_query() {

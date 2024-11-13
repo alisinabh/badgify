@@ -1,5 +1,5 @@
 use alloy::primitives::U256;
-use marketh_rs::utils::*;
+use badgify_rs::utils::*;
 
 #[test]
 fn test_parse_u256_valid_decimal() {

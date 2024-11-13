@@ -23,10 +23,9 @@ import {
 } from "@/components/ui/select";
 import { ChainSelector, Chain } from "./chain-selector";
 
-const BASE_URL = "https://marketh.fly.dev";
-const BADGE_BASE_URL = `${BASE_URL}/badge`;
+const BADGE_BASE_URL = `${window.location.origin}/badge`;
 
-export default function CryptoShieldGenerator() {
+export default function BadgeGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
   const [queryType, setQueryType] = useState("eth");
   const [address, setAddress] = useState("");
@@ -38,14 +37,20 @@ export default function CryptoShieldGenerator() {
   useEffect(() => {
     if (address) {
       let url = "";
-      if (selectedChain === "ethereum") {
-        if (queryType === "eth") {
-          url = `evm/${evmChain?.chainId}/balance/${address}`;
-        } else if (queryType === "erc20" && tokenAddress) {
-          url = `evm/${evmChain?.chainId}/erc20_balance/${tokenAddress}/${address}`;
-        }
-      } else if (selectedChain === "bitcoin") {
-        url = `btc/${evmChain?.chainId}/balance/${address}`;
+      switch (selectedChain) {
+        case "ethereum":
+          switch (queryType) {
+            case "eth":
+              url = `evm/${evmChain?.chainId}/balance/${address}`;
+              break;
+            case "erc20":
+              url = `evm/${evmChain?.chainId}/erc20_balance/${tokenAddress}/${address}`;
+              break;
+          }
+          break;
+        case "bitcoin":
+          url = `btc/${evmChain?.chainId}/balance/${address}`;
+          break;
       }
       setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
     } else {
@@ -84,7 +89,7 @@ export default function CryptoShieldGenerator() {
               />
               <EthereumBadge className="mb-3 h-8 w-8" />
               <span className="text-sm font-medium text-gray-900">
-                Ethereum
+                Ethereum (EVM)
               </span>
             </Label>
             <Label

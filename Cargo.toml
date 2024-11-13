@@ -1,13 +1,13 @@
 [package]
-name = "marketh"
+name = "badgify"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "marketh_rs"
+name = "badgify_rs"
 
 [[bin]]
-name = "marketh"
+name = "badgify"
 path = "src/main.rs"
 
 [dependencies]

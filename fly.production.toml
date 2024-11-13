@@ -1,15 +1,12 @@
-# fly.toml app configuration file generated for marketh on 2024-11-04T23:32:56-05:00
+# fly.toml app configuration file generated for badgify-prod on 2024-11-13T14:55:56-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'marketh'
-primary_region = 'yyz'
+app = 'badgify-prod'
+primary_region = 'dfw'
 
 [build]
-
-[env]
-  PORT = '8080'
 
 [http_service]
   internal_port = 8080
@@ -20,4 +17,6 @@ primary_region = 'yyz'
   processes = ['app']
 
 [[vm]]
-  size = 'shared-cpu-1x'
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

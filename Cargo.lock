@@ -1128,6 +1128,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "badgify"
+version = "0.1.0"
+dependencies = [
+ "actix-files",
+ "actix-web",
+ "alloy",
+ "env_logger",
+ "image",
+ "imageproc",
+ "num",
+ "once_cell",
+ "reqwest",
+ "rusttype",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "base16ct"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2460,25 +2479,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
 dependencies = [
  "hashbrown 0.15.0",
-]
-
-[[package]]
-name = "marketh"
-version = "0.1.0"
-dependencies = [
- "actix-files",
- "actix-web",
- "alloy",
- "env_logger",
- "image",
- "imageproc",
- "num",
- "once_cell",
- "reqwest",
- "rusttype",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

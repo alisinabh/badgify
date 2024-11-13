@@ -20,7 +20,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 # Build application
 COPY . .
-RUN cargo build --release --bin marketh
+RUN cargo build --release --bin badgify
 
 # We do not need the Rust toolchain to run the binary!
 FROM debian:bookworm-slim AS runtime
@@ -28,6 +28,6 @@ RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/
 
 WORKDIR /app
 COPY --from=ui-builder /app/dist /app/ui/dist
-COPY --from=builder /app/target/release/marketh /usr/local/bin
+COPY --from=builder /app/target/release/badgify /usr/local/bin
 
-ENTRYPOINT ["/usr/local/bin/marketh"]
+ENTRYPOINT ["/usr/local/bin/badgify"]
