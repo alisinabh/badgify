@@ -195,7 +195,7 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
           <CommandGroup heading="Networks">
             <CommandList>
               {filteredChains
-                .slice(0, 10)
+                .slice(0, 25)
                 .map((chain) => chainListEntry(chain))}
               <CommandEmpty>No networks found.</CommandEmpty>
             </CommandList>
