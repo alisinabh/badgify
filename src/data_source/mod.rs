@@ -1,7 +1,10 @@
+mod bitcoin;
+mod bitcoing_metadata;
 mod evm;
 mod evm_metadata;
 
 use alloy::primitives::U256;
+use bitcoing_metadata::BitcoinMetadata;
 use evm_metadata::EvmMetadata;
 
 use crate::query::Query;
@@ -29,6 +32,7 @@ impl SourceResponseWithMetadata {
 #[derive(Serialize)]
 #[serde(tag = "type")]
 pub enum SourceMetadata {
+    Bitcoin(BitcoinMetadata),
     Evm(EvmMetadata),
 }
 
@@ -36,18 +40,21 @@ impl SourceMetadata {
     pub fn symbol(&self) -> String {
         match self {
             Self::Evm(evm_metadata) => evm_metadata.symbol(),
+            Self::Bitcoin(bitcoing_metadata) => bitcoing_metadata.symbol(),
         }
     }
 
     pub fn label(&self) -> Option<String> {
         match self {
             Self::Evm(evm_metadata) => evm_metadata.label(),
+            Self::Bitcoin(bitcoing_metadata) => bitcoing_metadata.label(),
         }
     }
 
     pub fn logo(&self) -> Option<String> {
         match self {
             Self::Evm(evm_metadata) => evm_metadata.logo(),
+            Self::Bitcoin(bitcoing_metadata) => bitcoing_metadata.logo(),
         }
     }
 }
@@ -127,6 +134,7 @@ fn to_tiny(value: &U256, formatted: &str) -> Result<String, String> {
 #[derive(Default)]
 pub struct DataSource {
     evm_data_source: evm::EvmDataSource,
+    bitcoin_data_source: bitcoin::BitcoinDataSource,
 }
 
 impl DataSource {
@@ -136,7 +144,7 @@ impl DataSource {
     ) -> Result<SourceResponseWithMetadata, Box<dyn Error>> {
         match query {
             Query::Evm(evm_query) => self.evm_data_source.get_data(evm_query).await,
-            Query::Bitcoin(_bitcoin_query) => todo!(),
+            Query::Bitcoin(bitcoin_query) => self.bitcoin_data_source.get_data(bitcoin_query).await,
         }
     }
 }

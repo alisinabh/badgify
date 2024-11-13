@@ -1,9 +1,9 @@
-mod bitcoin;
+pub mod bitcoin;
 pub mod evm;
 
 pub use evm::{EvmQuery, EvmQueryParseError};
 
-use bitcoin::BitcoinQuery;
+use bitcoin::{BitcoinQuery, BitcoinQueryParseError};
 
 #[derive(Debug)]
 pub enum Query {
@@ -16,6 +16,7 @@ pub enum QueryParseError {
     SourceNotFoundError,
     InvalidSource(String),
     EvmQueryParseError(EvmQueryParseError),
+    BitcoinQueryParseError(BitcoinQueryParseError),
 }
 
 impl Query {
@@ -29,7 +30,10 @@ impl Query {
             "evm" => Ok(Query::Evm(
                 EvmQuery::parse(path_params).map_err(QueryParseError::EvmQueryParseError)?,
             )),
-            // "bitcoin" => parse_bitcoin_query(path_params),
+            "btc" => Ok(Query::Bitcoin(
+                BitcoinQuery::parse(path_params)
+                    .map_err(QueryParseError::BitcoinQueryParseError)?,
+            )),
             invalid => Err(QueryParseError::InvalidSource(invalid.into())),
         }
     }
