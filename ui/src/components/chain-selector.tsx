@@ -85,11 +85,9 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
 
   const filteredChains = useMemo(() => {
     const q = searchValue.toLowerCase();
-    if (q.trim() === "") {
-      console.log("default");
+    if (q.trim().length == 0) {
       return chains;
     } else {
-      console.log("search");
       return chains
         .filter(
           (item) =>
@@ -109,7 +107,7 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
           return 0;
         });
     }
-  }, [searchValue]);
+  }, [searchValue, open]);
 
   if (isLoading) {
     return (
