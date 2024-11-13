@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
+  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -59,6 +60,7 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
           return item;
         });
 
+        setSelectedChain(data.filter((c) => c.chainId == 1)[0]);
         setChains(data);
       } catch (err) {
         setError("Error loading chain data. Please try again later.");
@@ -83,14 +85,30 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
 
   const filteredChains = useMemo(() => {
     const q = searchValue.toLowerCase();
-    return chains
-      .filter(
-        (item) =>
-          item.name?.toLowerCase().includes(q) ||
-          item.title?.toLowerCase().includes(q) ||
-          item.chainId.toString().includes(q),
-      )
-      .slice(0, 20);
+    if (q.trim() === "") {
+      console.log("default");
+      return chains;
+    } else {
+      console.log("search");
+      return chains
+        .filter(
+          (item) =>
+            item.name?.toLowerCase().includes(q) ||
+            item.title?.toLowerCase().includes(q) ||
+            item.chainId.toString().includes(q),
+        )
+        .sort((a, b) => {
+          if ((a.name || a.title)?.toLowerCase() === q) {
+            return -1;
+          }
+
+          if ((b.name || b.title)?.toLowerCase() === q) {
+            return 1;
+          }
+
+          return 0;
+        });
+    }
   }, [searchValue]);
 
   if (isLoading) {
@@ -109,6 +127,34 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
     );
   }
 
+  const chainListEntry = (chain: Chain) => {
+    return (
+      <CommandItem
+        key={chain.chainId}
+        onSelect={() => handleSelect(chain)}
+        className="cursor-pointer"
+      >
+        <Check
+          className={cn(
+            "mr-2 h-4 w-4",
+            selectedChain?.chainId === chain.chainId
+              ? "opacity-100"
+              : "opacity-0",
+          )}
+        />
+        {chain.name || chain.title}
+        <div className="text-slate-400">{chain.chainId}</div>
+        <div className=""></div>
+        <FlaskConical
+          className={cn(
+            "mr-2 h-4 w-4 text-pink-700",
+            chain?.testnet ? "opacity-100" : "opacity-0",
+          )}
+        />
+      </CommandItem>
+    );
+  };
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -119,8 +165,16 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
           className="w-full justify-between"
         >
           {selectedChain
-            ? `${selectedChain.name || selectedChain.title} (${selectedChain.chainId})`
+            ? `${selectedChain.name || selectedChain.title}`
             : "Select network..."}
+          <div className="text-slate-400">{selectedChain?.chainId}</div>
+          <FlaskConical
+            className={cn(
+              "mr-2 h-4 w-4 text-pink-700",
+              selectedChain?.testnet ? "opacity-100" : "opacity-0",
+            )}
+          />
+          <div className="w-full"></div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -131,28 +185,14 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
             onValueChange={handleSearch}
             placeholder="Search network..."
           />
-          <CommandList>
-            {filteredChains.map((chain) => (
-              <CommandItem
-                key={chain.chainId}
-                onSelect={() => handleSelect(chain)}
-                className="cursor-pointer"
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    selectedChain?.chainId === chain.chainId
-                      ? "opacity-100"
-                      : "opacity-0",
-                  )}
-                />
-                {chain.name || chain.title} ({chain.chainId})
-              </CommandItem>
-            ))}
-            {filteredChains.length === 0 && (
+          <CommandGroup heading="Networks">
+            <CommandList>
+              {filteredChains
+                .slice(0, 10)
+                .map((chain) => chainListEntry(chain))}
               <CommandEmpty>No networks found.</CommandEmpty>
-            )}
-          </CommandList>
+            </CommandList>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>
