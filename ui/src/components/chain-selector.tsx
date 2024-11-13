@@ -18,17 +18,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-type Chain = {
+export type Chain = {
   name?: string;
   chain?: string;
   title?: string;
   network?: string;
   chainId: number;
   testnet: boolean;
+  nativeCurrency: NativeCurrency;
+};
+
+export type NativeCurrency = {
+  name?: string;
+  symbol?: string;
+  decimals?: number;
 };
 
 type ChainSelectorProps = {
-  onSelect: (chainId: number) => void;
+  onSelect: (chain: Chain) => void;
 };
 
 export function ChainSelector({ onSelect }: ChainSelectorProps) {
@@ -60,8 +67,10 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
           return item;
         });
 
-        setSelectedChain(data.filter((c) => c.chainId == 1)[0]);
+        const defaultChain = data.filter((c) => c.chainId == 1)[0];
+        setSelectedChain(defaultChain);
         setChains(data);
+        onSelect(defaultChain);
       } catch (err) {
         setError("Error loading chain data. Please try again later.");
         console.error("Error fetching chain data:", err);
@@ -76,7 +85,7 @@ export function ChainSelector({ onSelect }: ChainSelectorProps) {
   const handleSelect = (chain: Chain) => {
     setSelectedChain(chain);
     setOpen(false);
-    onSelect(chain.chainId);
+    onSelect(chain);
   };
 
   const handleSearch = (value: string) => {

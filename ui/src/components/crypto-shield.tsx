@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Wallet, Coins } from "lucide-react";
+import { Wallet, Coins, LucideAlignEndVertical } from "lucide-react";
 import { EthereumBadge, BitcoinBadge } from "cryptocons";
 import {
   Card,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChainSelector } from "./chain-selector";
+import { ChainSelector, Chain } from "./chain-selector";
 
 const BASE_URL = "https://marketh.fly.dev";
 const BADGE_BASE_URL = `${BASE_URL}/badge`;
@@ -32,7 +32,7 @@ export default function CryptoShieldGenerator() {
   const [address, setAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState("");
   const [badgeUrl, setBadgeUrl] = useState("");
-  const [chainId, setChainId] = useState(1); // Default to Ethereum mainnet
+  const [evmChain, setEvmChain] = useState<Chain | null>(null);
   const [btcNetwork, setBtcNetwork] = useState("mainnet");
 
   useEffect(() => {
@@ -40,18 +40,18 @@ export default function CryptoShieldGenerator() {
       let url = "";
       if (selectedChain === "ethereum") {
         if (queryType === "eth") {
-          url = `evm/${chainId}/balance/${address}`;
+          url = `evm/${evmChain?.chainId}/balance/${address}`;
         } else if (queryType === "erc20" && tokenAddress) {
-          url = `evm/${chainId}/erc20_balance/${tokenAddress}/${address}`;
+          url = `evm/${evmChain?.chainId}/erc20_balance/${tokenAddress}/${address}`;
         }
       } else if (selectedChain === "bitcoin") {
-        url = `btc/${btcNetwork}/balance/${address}`;
+        url = `btc/${evmChain?.chainId}/balance/${address}`;
       }
       setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
     } else {
       setBadgeUrl("");
     }
-  }, [selectedChain, queryType, address, tokenAddress, chainId, btcNetwork]);
+  }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork]);
 
   return (
     <Card className="max-w-2xl mx-auto bg-white">
@@ -108,7 +108,7 @@ export default function CryptoShieldGenerator() {
               <Label className="text-sm font-medium text-gray-700">
                 Select Network
               </Label>
-              <ChainSelector onSelect={setChainId} />
+              <ChainSelector onSelect={setEvmChain} />
             </div>
 
             <div className="space-y-2">
@@ -120,7 +120,9 @@ export default function CryptoShieldGenerator() {
                   <SelectValue placeholder="Select query type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="eth">ETH Balance</SelectItem>
+                  <SelectItem value="eth">
+                    {evmChain?.nativeCurrency.symbol} Balance
+                  </SelectItem>
                   <SelectItem value="erc20">ERC20 Token Balance</SelectItem>
                 </SelectContent>
               </Select>
