@@ -14,6 +14,7 @@ path = "src/main.rs"
 actix-files = "0.6.6"
 actix-web = "4"
 alloy = { version = "0.5.4", features = ["full"] }
+env_logger = "0.11.5"
 image = "0.24.4"
 imageproc = "0.23.0"
 num = "0.4"

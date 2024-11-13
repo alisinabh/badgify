@@ -7,7 +7,7 @@ pub mod utils;
 mod evm_chainlist;
 mod services;
 
-use actix_web::{web, App, HttpServer};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use data_source::{DataSource, SourceResponseWithMetadata};
 use query::Query;
 
@@ -38,11 +38,13 @@ impl Executor {
 }
 
 pub async fn start_server(host: &str, port: u16) {
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     // Start HTTP Server
     HttpServer::new(|| {
         let ui_directory = std::env::var("UI_DIRECTORY").unwrap_or("./ui/dist".to_string());
 
         App::new()
+            .wrap(Logger::default())
             .app_data(web::Data::new(Executor::new()))
             .service(services::api::health)
             .service(services::api::query)
