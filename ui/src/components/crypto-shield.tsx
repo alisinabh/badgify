@@ -28,7 +28,7 @@ const BADGE_BASE_URL = `${BASE_URL}/badge`;
 
 export default function CryptoShieldGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
-  const [balanceType, setBalanceType] = useState("eth");
+  const [queryType, setQueryType] = useState("eth");
   const [address, setAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState("");
   const [badgeUrl, setBadgeUrl] = useState("");
@@ -39,9 +39,9 @@ export default function CryptoShieldGenerator() {
     if (address) {
       let url = "";
       if (selectedChain === "ethereum") {
-        if (balanceType === "eth") {
+        if (queryType === "eth") {
           url = `evm/${chainId}/balance/${address}`;
-        } else if (balanceType === "erc20" && tokenAddress) {
+        } else if (queryType === "erc20" && tokenAddress) {
           url = `evm/${chainId}/erc20_balance/${tokenAddress}/${address}`;
         }
       } else if (selectedChain === "bitcoin") {
@@ -51,7 +51,7 @@ export default function CryptoShieldGenerator() {
     } else {
       setBadgeUrl("");
     }
-  }, [selectedChain, balanceType, address, tokenAddress, chainId, btcNetwork]);
+  }, [selectedChain, queryType, address, tokenAddress, chainId, btcNetwork]);
 
   return (
     <Card className="max-w-2xl mx-auto bg-white">
@@ -113,11 +113,11 @@ export default function CryptoShieldGenerator() {
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">
-                Balance Type
+                Query Type
               </Label>
-              <Select defaultValue="eth" onValueChange={setBalanceType}>
+              <Select defaultValue="eth" onValueChange={setQueryType}>
                 <SelectTrigger className="w-full bg-white border-gray-300">
-                  <SelectValue placeholder="Select balance type" />
+                  <SelectValue placeholder="Select query type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="eth">ETH Balance</SelectItem>
@@ -126,7 +126,7 @@ export default function CryptoShieldGenerator() {
               </Select>
             </div>
 
-            {balanceType === "erc20" && (
+            {queryType === "erc20" && (
               <div className="space-y-2">
                 <Label
                   htmlFor="tokenAddress"
