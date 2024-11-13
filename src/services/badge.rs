@@ -20,8 +20,10 @@ pub async fn badge(
     query: web::Query<BadgeQuery>,
 ) -> impl Responder {
     let Ok(result) = executor.query_data(&badge_query.to_string()).await else {
-        println!("Failure");
-        return HttpResponse::InternalServerError().body("failed");
+        let mut badge = Badge::new("Failed");
+        badge.color = Some("red".to_string());
+        badge.label = Some("Badge".to_string());
+        return render_badge(badge);
     };
 
     let mut badge: Badge = result.into();
@@ -38,7 +40,11 @@ pub async fn badge(
         badge.logo = Some(Logo::Slug(logo.to_string()));
     }
 
-    let shields_io_badge: ShildsIoBadge = badge.into();
+    render_badge(badge)
+}
+
+pub fn render_badge(badge_data: Badge) -> impl Responder {
+    let shields_io_badge: ShildsIoBadge = badge_data.into();
 
     HttpResponse::TemporaryRedirect()
         .insert_header((LOCATION, shields_io_badge.image_url))
