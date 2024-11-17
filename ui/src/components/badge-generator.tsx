@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChainSelector, Chain } from "./chain-selector";
+import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
 
-const BADGE_BASE_URL = `${window.location.origin}/badge`;
+// const BADGE_BASE_URL = `${window.location.origin}/badge`;
+const BADGE_BASE_URL = `https://badgify.io/badge`;
 
 export default function BadgeGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
@@ -33,29 +35,65 @@ export default function BadgeGenerator() {
   const [badgeUrl, setBadgeUrl] = useState("");
   const [evmChain, setEvmChain] = useState<Chain | null>(null);
   const [btcNetwork, setBtcNetwork] = useState("mainnet");
+  const [addressError, setAddressError] = useState<string>("");
+  const [tokenAddressError, setTokenAddressError] = useState<string>("");
 
   useEffect(() => {
-    if (address) {
-      let url = "";
-      switch (selectedChain) {
-        case "ethereum":
-          switch (queryType) {
-            case "eth":
-              url = `evm/${evmChain?.chainId}/balance/${address}`;
-              break;
-            case "erc20":
-              url = `evm/${evmChain?.chainId}/erc20_balance/${tokenAddress}/${address}`;
-              break;
-          }
-          break;
-        case "bitcoin":
-          url = `btc/${evmChain?.chainId}/balance/${address}`;
-          break;
+    let isValid = true;
+
+    // Reset errors initially
+    setAddressError("");
+    setTokenAddressError("");
+
+    // Validate wallet address
+    if (!address) {
+      isValid = false;
+    } else if (selectedChain === "ethereum") {
+      if (!isValidEthereumAddress(address)) {
+        setAddressError("Invalid Ethereum address format");
+        isValid = false;
       }
-      setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
-    } else {
-      setBadgeUrl("");
+    } else if (selectedChain === "bitcoin") {
+      if (!isValidBitcoinAddress(address)) {
+        setAddressError("Invalid Bitcoin address format");
+        isValid = false;
+      }
     }
+
+    // Validate ERC20 token address
+    if (selectedChain === "ethereum" && queryType === "erc20") {
+      if (!tokenAddress) {
+        setTokenAddressError("Token address is required");
+        isValid = false;
+      } else if (!isValidEthereumAddress(tokenAddress)) {
+        setTokenAddressError("Invalid ERC20 token address format");
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
+      setBadgeUrl("");
+      return;
+    }
+
+    // Generate URL
+    let url = "";
+    switch (selectedChain) {
+      case "ethereum":
+        switch (queryType) {
+          case "eth":
+            url = `evm/${evmChain?.chainId}/balance/${address}`;
+            break;
+          case "erc20":
+            url = `evm/${evmChain?.chainId}/erc20_balance/${tokenAddress}/${address}`;
+            break;
+        }
+        break;
+      case "bitcoin":
+        url = `btc/${btcNetwork}/balance/${address}`;
+        break;
+    }
+    setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
   }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork]);
 
   return (
@@ -148,9 +186,14 @@ export default function BadgeGenerator() {
                     placeholder="Enter ERC20 token contract address"
                     value={tokenAddress}
                     onChange={(e) => setTokenAddress(e.target.value)}
-                    className="pl-9 bg-white border-gray-300"
+                    className={`pl-9 bg-white border-gray-300 ${
+                      tokenAddressError ? "border-red-500" : ""
+                    }`}
                   />
                 </div>
+                {tokenAddressError && (
+                  <p className="text-sm text-red-500">{tokenAddressError}</p>
+                )}
               </div>
             )}
           </>
@@ -188,9 +231,14 @@ export default function BadgeGenerator() {
               placeholder={`Enter ${selectedChain} address`}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="pl-9 bg-white border-gray-300"
+              className={`pl-9 bg-white border-gray-300 ${
+                addressError ? "border-red-500" : ""
+              }`}
             />
           </div>
+          {addressError && (
+            <p className="text-sm text-red-500">{addressError}</p>
+          )}
         </div>
 
         <Tabs defaultValue="preview" className="w-full">
