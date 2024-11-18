@@ -136,5 +136,6 @@ impl EvmChainList {
 }
 
 async fn fetch_evm_chainlist() -> Result<Vec<EvmChain>, Box<dyn std::error::Error>> {
+    println!("Fetching EVM Chainlist");
     Ok(reqwest::get(CHAIN_LIST_URL).await?.json().await?)
 }

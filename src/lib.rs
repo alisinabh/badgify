@@ -50,11 +50,13 @@ pub async fn start_server(host: &str, port: u16) {
     // Initialize logger
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
+    let executor = web::Data::new(Executor::new());
+
     // Start HTTP Server
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(web::Data::new(Executor::new()))
+            .app_data(executor.clone())
             .service(services::api::health)
             .service(services::api::query)
             .service(services::badge::badge)

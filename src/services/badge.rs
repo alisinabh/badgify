@@ -34,10 +34,8 @@ pub async fn badge(
     badge.color = if let Some(color) = &query.color {
         Some(color.to_string())
     } else {
-        println!("No color");
         match result.result {
             SourceResponse::Decimal { value, decimals: _ } => {
-                println!("Decimal");
                 if value.le(&query.warning_threshold.unwrap_or(U256::ZERO)) {
                     Some("yellow".to_string())
                 } else {

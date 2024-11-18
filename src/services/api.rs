@@ -10,7 +10,6 @@ pub async fn health() -> impl Responder {
 #[get("/api/query/{query:.*}")]
 pub async fn query(query: web::Path<String>, executor: web::Data<Executor>) -> impl Responder {
     let Ok(result) = executor.query_data(&query.to_string()).await else {
-        println!("Failure");
         return HttpResponse::InternalServerError().body("failed");
     };
 
