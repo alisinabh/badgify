@@ -161,7 +161,10 @@ export default function BadgeGenerator() {
               <Label className="text-sm font-medium text-gray-700">
                 Query Type
               </Label>
-              <Select defaultValue="eth" onValueChange={setQueryType}>
+              <Select
+                defaultValue={queryType || "eth"}
+                onValueChange={setQueryType}
+              >
                 <SelectTrigger className="w-full bg-white border-gray-300">
                   <SelectValue placeholder="Select query type" />
                 </SelectTrigger>
