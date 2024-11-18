@@ -29,8 +29,8 @@ impl Badge {
     }
 }
 
-impl From<SourceResponseWithMetadata> for Badge {
-    fn from(value: SourceResponseWithMetadata) -> Self {
+impl From<&SourceResponseWithMetadata> for Badge {
+    fn from(value: &SourceResponseWithMetadata) -> Self {
         let mut badge = Badge::new(&value.result.formatted_tiny());
 
         badge.label = value.metadata.label();

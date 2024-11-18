@@ -25,7 +25,7 @@ impl From<Badge> for ShildsIoBadge {
             } else {
                 "".to_string()
             },
-            &value.color.unwrap_or("green".to_string())
+            &value.color.unwrap_or("blue".to_string())
         );
 
         let mut params: Vec<(&str, String)> = Vec::new();

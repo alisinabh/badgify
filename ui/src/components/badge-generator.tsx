@@ -24,8 +24,7 @@ import {
 import { ChainSelector, Chain } from "./chain-selector";
 import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
 
-// const BADGE_BASE_URL = `${window.location.origin}/badge`;
-const BADGE_BASE_URL = `https://badgify.io/badge`;
+const BADGE_BASE_URL = `${window.location.origin}/badge`;
 
 export default function BadgeGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
