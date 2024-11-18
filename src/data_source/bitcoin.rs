@@ -23,6 +23,14 @@ impl BitcoinDataSource {
         }
     }
 
+    pub async fn get_scanner_link(&self, query: BitcoinQuery) -> Result<String, Box<dyn Error>> {
+        match query {
+            BitcoinQuery::NativeBalance { network, address } => {
+                Ok(get_scanner_link(&network, &address))
+            }
+        }
+    }
+
     async fn get_native_balance(
         &self,
         network: BitcoinNetwork,
@@ -84,4 +92,19 @@ async fn get_address_info(
     req_url.push_str(address);
 
     Ok(reqwest::get(req_url).await?.json().await?)
+}
+
+fn get_scanner_link(network: &BitcoinNetwork, address: &str) -> String {
+    let mut req_url = "https://mempool.space".to_string();
+
+    match network {
+        BitcoinNetwork::Mainnet => (),
+        BitcoinNetwork::Testnet => req_url.push_str("/testnet"),
+        BitcoinNetwork::Signet => req_url.push_str("/signet"),
+    }
+
+    req_url.push_str("/address/");
+    req_url.push_str(address);
+
+    req_url
 }

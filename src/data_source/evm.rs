@@ -54,6 +54,72 @@ impl Default for EvmDataSource {
 }
 
 impl EvmDataSource {
+    pub async fn get_scanner_link(&self, evm_query: EvmQuery) -> Result<String, Box<dyn Error>> {
+        match evm_query {
+            EvmQuery::NativeBalance { chain_id, address } => {
+                self.get_address_page_link(chain_id, address).await
+            }
+            EvmQuery::ERC20Balance {
+                chain_id,
+                address,
+                contract_address,
+            } => {
+                self.get_erc20_balance_page_link(chain_id, contract_address, address)
+                    .await
+            }
+        }
+    }
+
+    async fn get_address_page_link(
+        &self,
+        chain_id: ChainID,
+        address: Address,
+    ) -> Result<String, Box<dyn Error>> {
+        let mut link = self.eip3091_explorer_url(chain_id).await?;
+
+        link.push_str("/address/");
+        link.push_str(&address.to_string());
+
+        Ok(link)
+    }
+
+    async fn get_erc20_balance_page_link(
+        &self,
+        chain_id: ChainID,
+        contract_address: Address,
+        address: Address,
+    ) -> Result<String, Box<dyn Error>> {
+        let mut link = self.eip3091_explorer_url(chain_id).await?;
+
+        link.push_str("/token/");
+        link.push_str(&contract_address.to_string());
+        link.push_str("?a=");
+        link.push_str(&address.to_string());
+
+        Ok(link)
+    }
+
+    async fn eip3091_explorer_url(&self, chain_id: ChainID) -> Result<String, Box<dyn Error>> {
+        let chain = self
+            .chain_list
+            .fetch_evm_chain(chain_id)
+            .await?
+            .ok_or("Chain Not Found")?;
+
+        let explorers = chain
+            .explorers
+            .ok_or(format!("No explorer found for chain {chain_id}"))?;
+
+        let explorer = explorers
+            .iter()
+            .find(|ex| ex.standard == "EIP3091")
+            .ok_or(format!("No EIP3091 explorers found for chain {chain_id}"))?;
+
+        Ok(explorer.url.clone())
+    }
+}
+
+impl EvmDataSource {
     pub async fn get_data(
         &self,
         evm_query: EvmQuery,

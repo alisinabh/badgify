@@ -24,7 +24,9 @@ import {
 import { ChainSelector, Chain } from "./chain-selector";
 import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
 
-const BADGE_BASE_URL = `${window.location.origin}/badge`;
+const BASE_URL = window.location.origin;
+const BADGE_BASE_URL = `${BASE_URL}/badge`;
+const LINK_BASE_URL = `${BASE_URL}/scanner`;
 
 export default function BadgeGenerator() {
   const [selectedChain, setSelectedChain] = useState("ethereum");
@@ -32,6 +34,7 @@ export default function BadgeGenerator() {
   const [address, setAddress] = useState("");
   const [tokenAddress, setTokenAddress] = useState("");
   const [badgeUrl, setBadgeUrl] = useState("");
+  const [badgeLinkUrl, setBadgeLinkUrl] = useState("");
   const [evmChain, setEvmChain] = useState<Chain | null>(null);
   const [btcNetwork, setBtcNetwork] = useState("mainnet");
   const [addressError, setAddressError] = useState<string>("");
@@ -93,6 +96,7 @@ export default function BadgeGenerator() {
         break;
     }
     setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
+    setBadgeLinkUrl(`${LINK_BASE_URL}/${url}`);
   }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork]);
 
   return (
@@ -261,7 +265,9 @@ export default function BadgeGenerator() {
           >
             <div className="flex justify-center py-4">
               {badgeUrl ? (
-                <img src={badgeUrl} alt="Crypto Balance Badge" />
+                <a target="_blank" href={badgeLinkUrl}>
+                  <img src={badgeUrl} alt="Crypto Balance Badge" />
+                </a>
               ) : (
                 <p className="text-gray-500">
                   Enter an address to generate a badge
@@ -275,7 +281,11 @@ export default function BadgeGenerator() {
           >
             <Input
               readOnly
-              value={badgeUrl ? `![${selectedChain} Balance](${badgeUrl})` : ""}
+              value={
+                badgeUrl
+                  ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
+                  : ""
+              }
               onClick={(e) => (e.target as HTMLInputElement).select()}
               className="bg-gray-50 border-gray-300"
             />

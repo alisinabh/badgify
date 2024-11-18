@@ -7,6 +7,8 @@ pub mod utils;
 mod evm_chainlist;
 mod services;
 
+use std::error::Error;
+
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use data_source::{DataSource, SourceResponseWithMetadata};
 use query::Query;
@@ -31,9 +33,14 @@ impl Executor {
     pub async fn query_data(
         &self,
         path: &str,
-    ) -> Result<SourceResponseWithMetadata, Box<dyn std::error::Error>> {
+    ) -> Result<SourceResponseWithMetadata, Box<dyn Error>> {
         let query = Query::parse_path(path)?;
         self.data_source.get_data(query).await
+    }
+
+    pub async fn get_scanner_link(&self, path: &str) -> Result<String, Box<dyn Error>> {
+        let query = Query::parse_path(path)?;
+        self.data_source.get_scanner_link(query).await
     }
 }
 
@@ -51,6 +58,7 @@ pub async fn start_server(host: &str, port: u16) {
             .service(services::api::health)
             .service(services::api::query)
             .service(services::badge::badge)
+            .service(services::scanner::scanner)
             .service(actix_files::Files::new("/", ui_directory.clone()).index_file("index.html"))
     })
     .bind((host, port))

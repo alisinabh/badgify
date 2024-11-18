@@ -31,8 +31,8 @@ pub struct EvmChain {
     pub network_id: U256,
     pub slip44: Option<u64>,
     // pub ens: Option<Ens>,
-    // #[serde(skip_serializing)]
-    // pub explorers: Option<Vec<Explorer>>,
+    #[serde(skip_serializing)]
+    pub explorers: Option<Vec<Explorer>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -54,10 +54,10 @@ pub struct Ens {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Explorer {
-    name: String,
-    url: String,
-    icon: Option<String>,
-    standard: String,
+    pub name: String,
+    pub url: String,
+    pub icon: Option<String>,
+    pub standard: String,
 }
 
 pub struct EvmChainList {

@@ -147,4 +147,15 @@ impl DataSource {
             Query::Bitcoin(bitcoin_query) => self.bitcoin_data_source.get_data(bitcoin_query).await,
         }
     }
+
+    pub async fn get_scanner_link(&self, query: Query) -> Result<String, Box<dyn Error>> {
+        match query {
+            Query::Evm(evm_query) => self.evm_data_source.get_scanner_link(evm_query).await,
+            Query::Bitcoin(bitcoin_query) => {
+                self.bitcoin_data_source
+                    .get_scanner_link(bitcoin_query)
+                    .await
+            }
+        }
+    }
 }
