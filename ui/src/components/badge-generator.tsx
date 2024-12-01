@@ -360,9 +360,6 @@ export default function BadgeGenerator() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  Badge Link Settings
-                </Label>
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="browser-link" 
@@ -371,7 +368,7 @@ export default function BadgeGenerator() {
                     className="border-gray-300"
                   />
                   <Label htmlFor="browser-link" className="text-sm text-gray-600 flex items-center gap-1">
-                    Link to explorer
+                    Link to block explorer
                     <span className="text-xs text-gray-400">(recommended)</span>
                   </Label>
                 </div>
