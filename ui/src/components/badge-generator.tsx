@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Wallet, Coins } from "lucide-react";
+import { Wallet, Coins, ChevronDown, ChevronRight } from "lucide-react";
 import { EthereumBadge, BitcoinBadge } from "cryptocons";
 import {
   Card,
@@ -25,6 +25,8 @@ import { ChainSelector, Chain } from "./chain-selector";
 import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyableInput } from "@/components/ui/copyable-input";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const BASE_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:8080' 
@@ -45,6 +47,9 @@ export default function BadgeGenerator() {
   const [tokenAddressError, setTokenAddressError] = useState<string>("");
   const [markdownWithLink, setMarkdownWithLink] = useState(true);
   const [htmlWithLink, setHtmlWithLink] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [badgeColor, setBadgeColor] = useState<string>("");
+  const [warningThreshold, setWarningThreshold] = useState<string>("");
 
   useEffect(() => {
     let isValid = true;
@@ -101,9 +106,19 @@ export default function BadgeGenerator() {
         url = `btc/${btcNetwork}/balance/${address}`;
         break;
     }
-    setBadgeUrl(`${BADGE_BASE_URL}/${url}`);
+
+    // Add color parameter if specified
+    const params = new URLSearchParams();
+    if (badgeColor) {
+      params.append('color', badgeColor);
+    } else if (warningThreshold) {
+      params.append('warning_threshold', warningThreshold);
+    }
+    const queryString = params.toString();
+    
+    setBadgeUrl(`${BADGE_BASE_URL}/${url}${queryString ? `?${queryString}` : ''}`);
     setBadgeLinkUrl(`${LINK_BASE_URL}/${url}`);
-  }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork]);
+  }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork, badgeColor, warningThreshold]);
 
   return (
     <Card className="max-w-2xl mx-auto bg-white">
@@ -250,6 +265,76 @@ export default function BadgeGenerator() {
           </div>
           {addressError && (
             <p className="text-sm text-red-500">{addressError}</p>
+          )}
+        </div>
+
+        {/* Advanced Configuration Section */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+          >
+            {showAdvanced ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            Advanced Configuration
+          </button>
+          
+          {showAdvanced && (
+            <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="badge_color"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Badge Color Override
+                </Label>
+                <Input
+                  type="text"
+                  id="badge_color"
+                  placeholder="e.g., blue, red, #ff0000"
+                  value={badgeColor}
+                  onChange={(e) => setBadgeColor(e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-gray-500">
+                  Enter a color name or hex code to customize the badge color
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="warning_threshold"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Warning Threshold
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Input
+                          type="text"
+                          id="warning_threshold"
+                          placeholder="e.g., 0.5"
+                          value={warningThreshold}
+                          onChange={(e) => setWarningThreshold(e.target.value)}
+                          disabled={!!badgeColor}
+                          className={cn(
+                            "bg-white",
+                            badgeColor && "cursor-not-allowed opacity-50"
+                          )}
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className={cn(!badgeColor && "hidden")}>
+                      <p>Warning threshold is unavailable is a color override is specified</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <p className="text-xs text-gray-500">
+                  Set a threshold to control when the badge turns yellow.
+                </p>
+              </div>
+            </div>
           )}
         </div>
 
