@@ -24,7 +24,9 @@ import {
 import { ChainSelector, Chain } from "./chain-selector";
 import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
 
-const BASE_URL = window.location.origin;
+const BASE_URL = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:8080' 
+  : window.location.origin;
 const BADGE_BASE_URL = `${BASE_URL}/badge`;
 const LINK_BASE_URL = `${BASE_URL}/scanner`;
 
@@ -247,26 +249,11 @@ export default function BadgeGenerator() {
           )}
         </div>
 
-        <Tabs defaultValue="preview" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-100">
-            <TabsTrigger
-              value="preview"
-              className="data-[state=active]:bg-white"
-            >
-              Preview
-            </TabsTrigger>
-            <TabsTrigger
-              value="markdown"
-              className="data-[state=active]:bg-white"
-            >
-              Markdown
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent
-            value="preview"
-            className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
-          >
-            <div className="flex justify-center py-4">
+        {/* Always visible preview section */}
+        <div className="space-y-2 bg-white border border-gray-200 rounded-lg p-3">
+          <div className="relative">
+            <span className="absolute top-0 right-0 text-xs text-gray-400 mr-2">Preview</span>
+            <div className="flex justify-center py-2">
               {badgeUrl ? (
                 <a target="_blank" href={badgeLinkUrl}>
                   <img src={badgeUrl} alt="Crypto Balance Badge" />
@@ -277,7 +264,24 @@ export default function BadgeGenerator() {
                 </p>
               )}
             </div>
-          </TabsContent>
+          </div>
+        </div>
+
+        <Tabs defaultValue="markdown" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+            <TabsTrigger
+              value="markdown"
+              className="data-[state=active]:bg-white"
+            >
+              Markdown
+            </TabsTrigger>
+            <TabsTrigger
+              value="html"
+              className="data-[state=active]:bg-white"
+            >
+              HTML
+            </TabsTrigger>
+          </TabsList>
           <TabsContent
             value="markdown"
             className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
@@ -296,6 +300,26 @@ export default function BadgeGenerator() {
               {badgeUrl
                 ? "Click to copy the markdown code"
                 : "Enter an address to generate markdown"}
+            </p>
+          </TabsContent>
+          <TabsContent
+            value="html"
+            className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
+          >
+            <Input
+              readOnly
+              value={
+                badgeUrl
+                  ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
+                  : ""
+              }
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+              className="bg-gray-50 border-gray-300"
+            />
+            <p className="text-sm text-gray-500 text-center">
+              {badgeUrl
+                ? "Click to copy the HTML code"
+                : "Enter an address to generate HTML"}
             </p>
           </TabsContent>
         </Tabs>
