@@ -126,7 +126,7 @@ export default function BadgeGenerator() {
           Generate Your Crypto Badge
         </CardTitle>
         <CardDescription className="text-gray-500">
-          Create a dynamic badge showing cryptocurrency balances for any address
+          Create dynamic badges that display real-time cryptocurrency balances
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -289,13 +289,13 @@ export default function BadgeGenerator() {
                 <Input
                   type="text"
                   id="badge_color"
-                  placeholder="e.g., blue, red, #ff0000"
+                  placeholder="Enter color name or hex code (e.g., blue, #ff0000)"
                   value={badgeColor}
                   onChange={(e) => setBadgeColor(e.target.value)}
                   className="bg-white"
                 />
                 <p className="text-xs text-gray-500">
-                  Enter a color name or hex code to customize the badge color
+                  Customize your badge with any valid CSS color value
                 </p>
               </div>
 
@@ -313,7 +313,7 @@ export default function BadgeGenerator() {
                         <Input
                           type="text"
                           id="warning_threshold"
-                          placeholder="e.g., 0.5"
+                          placeholder="e.g., 0.1 or 1.234"
                           value={warningThreshold}
                           onChange={(e) => setWarningThreshold(e.target.value)}
                           disabled={!!badgeColor}
@@ -325,18 +325,18 @@ export default function BadgeGenerator() {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className={cn(!badgeColor && "hidden")}>
-                      <p>Warning threshold is unavailable when a color override is specified</p>
+                      <p>Warning threshold is unavailable when a custom color is set</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <p className="text-xs text-gray-500">
-                  Set a threshold to control when the badge turns yellow.
+                  Set a threshold value to determine when the badge changes to a warning state
                 </p>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-700">
-                  Badge Link Options
+                  Badge Link Settings
                 </Label>
                 <div className="flex items-center space-x-2">
                   <Checkbox 
@@ -346,7 +346,7 @@ export default function BadgeGenerator() {
                     className="border-gray-300"
                   />
                   <Label htmlFor="browser-link" className="text-sm text-gray-600 flex items-center gap-1">
-                    Link badge to blockchain explorer
+                    Link to explorer
                     <span className="text-xs text-gray-400">(recommended)</span>
                   </Label>
                 </div>
@@ -355,22 +355,22 @@ export default function BadgeGenerator() {
           )}
         </div>
 
-        {/* Always visible preview section */}
+        {/* Preview section */}
         <div className="space-y-2 bg-white border border-gray-200 rounded-lg p-3">
           <div className="relative">
-            <span className="absolute top-0 right-0 text-xs text-gray-400 mr-2">Preview</span>
-            <div className="flex justify-center py-2">
+            <span className="absolute top-0 right-0 text-xs text-gray-400 mr-1">Live Preview</span>
+            <div className="flex justify-center py-3">
               {badgeUrl ? (
                 linkToBrowser ? (
                   <a target="_blank" href={badgeLinkUrl}>
-                    <img src={badgeUrl} alt="Crypto Balance Badge" />
+                    <img src={badgeUrl} alt={`${selectedChain} Balance Badge`} />
                   </a>
                 ) : (
-                  <img src={badgeUrl} alt="Crypto Balance Badge" />
+                  <img src={badgeUrl} alt={`${selectedChain} Balance Badge`} />
                 )
               ) : (
                 <p className="text-gray-500">
-                  Enter an address to generate a badge
+                  Enter an address to preview your badge
                 </p>
               )}
             </div>
@@ -458,8 +458,7 @@ export default function BadgeGenerator() {
 
         <div className="text-center text-sm text-gray-500">
           <p>
-            CryptoShield: Your go-to tool for dynamic cryptocurrency balance
-            badges
+            Badgify: Create professional cryptocurrency badges for your projects
           </p>
         </div>
       </CardContent>
