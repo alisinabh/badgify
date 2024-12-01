@@ -49,6 +49,7 @@ export default function BadgeGenerator() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [badgeColor, setBadgeColor] = useState<string>("");
   const [warningThreshold, setWarningThreshold] = useState<string>("");
+  const [icon, setIcon] = useState<string>("");
 
   useEffect(() => {
     let isValid = true;
@@ -110,14 +111,18 @@ export default function BadgeGenerator() {
     const params = new URLSearchParams();
     if (badgeColor) {
       params.append('color', badgeColor);
-    } else if (warningThreshold) {
+    }
+    if (warningThreshold) {
       params.append('warning_threshold', warningThreshold);
+    }
+    if (icon) {
+      params.append('icon', icon);
     }
     const queryString = params.toString();
     
     setBadgeUrl(`${BADGE_BASE_URL}/${url}${queryString ? `?${queryString}` : ''}`);
     setBadgeLinkUrl(`${LINK_BASE_URL}/${url}`);
-  }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork, badgeColor, warningThreshold]);
+  }, [selectedChain, queryType, address, tokenAddress, evmChain, btcNetwork, badgeColor, warningThreshold, icon]);
 
   return (
     <Card className="max-w-2xl mx-auto bg-white">
@@ -279,6 +284,26 @@ export default function BadgeGenerator() {
           
           {showAdvanced && (
             <div className="space-y-4 border rounded-lg p-4 bg-gray-50">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="icon"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Custom Icon
+                </Label>
+                <Input
+                  type="text"
+                  id="icon"
+                  placeholder="Enter icon name from simpleicons.org"
+                  value={icon}
+                  onChange={(e) => setIcon(e.target.value)}
+                  className="bg-white"
+                />
+                <p className="text-xs text-gray-500">
+                  Use any icon name from <a href="https://simpleicons.org" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">simpleicons.org</a>
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label
                   htmlFor="badge_color"

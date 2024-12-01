@@ -19,7 +19,7 @@ const DEFAULT_ABOVE_THRESHOLD_COLOR: &str = "blue";
 struct BadgeQuery {
     color: Option<String>,
     label: Option<String>,
-    logo: Option<String>,
+    icon: Option<String>,
     warning_threshold: Option<String>,
 }
 
@@ -49,8 +49,8 @@ pub async fn badge(
         badge.label = Some(label.to_string());
     }
 
-    if let Some(logo) = &query.logo {
-        badge.logo = Some(Logo::Slug(logo.to_string()));
+    if let Some(icon) = &query.icon {
+        badge.icon = Some(Logo::Slug(icon.to_string()));
     }
 
     render_badge(badge)

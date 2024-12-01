@@ -34,7 +34,7 @@ impl From<Badge> for ShildsIoBadge {
             params.push(("labelColor", label_color.to_string()));
         }
 
-        if let Some(logo) = &value.logo {
+        if let Some(logo) = &value.icon {
             params.push(("logo", from_badge_logo(logo)));
         }
 
