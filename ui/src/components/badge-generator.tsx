@@ -45,8 +45,7 @@ export default function BadgeGenerator() {
   const [btcNetwork, setBtcNetwork] = useState("mainnet");
   const [addressError, setAddressError] = useState<string>("");
   const [tokenAddressError, setTokenAddressError] = useState<string>("");
-  const [markdownWithLink, setMarkdownWithLink] = useState(true);
-  const [htmlWithLink, setHtmlWithLink] = useState(true);
+  const [linkToBrowser, setLinkToBrowser] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [badgeColor, setBadgeColor] = useState<string>("");
   const [warningThreshold, setWarningThreshold] = useState<string>("");
@@ -326,13 +325,31 @@ export default function BadgeGenerator() {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className={cn(!badgeColor && "hidden")}>
-                      <p>Warning threshold is unavailable is a color override is specified</p>
+                      <p>Warning threshold is unavailable when a color override is specified</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <p className="text-xs text-gray-500">
                   Set a threshold to control when the badge turns yellow.
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">
+                  Badge Link Options
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="browser-link" 
+                    checked={linkToBrowser}
+                    onCheckedChange={(checked: boolean) => setLinkToBrowser(checked)}
+                    className="border-gray-300"
+                  />
+                  <Label htmlFor="browser-link" className="text-sm text-gray-600 flex items-center gap-1">
+                    Link badge to blockchain explorer
+                    <span className="text-xs text-gray-400">(recommended)</span>
+                  </Label>
+                </div>
               </div>
             </div>
           )}
@@ -344,9 +361,13 @@ export default function BadgeGenerator() {
             <span className="absolute top-0 right-0 text-xs text-gray-400 mr-2">Preview</span>
             <div className="flex justify-center py-2">
               {badgeUrl ? (
-                <a target="_blank" href={badgeLinkUrl}>
+                linkToBrowser ? (
+                  <a target="_blank" href={badgeLinkUrl}>
+                    <img src={badgeUrl} alt="Crypto Balance Badge" />
+                  </a>
+                ) : (
                   <img src={badgeUrl} alt="Crypto Balance Badge" />
-                </a>
+                )
               ) : (
                 <p className="text-gray-500">
                   Enter an address to generate a badge
@@ -382,28 +403,14 @@ export default function BadgeGenerator() {
             className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
           >
             {badgeUrl ? (
-              <>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Checkbox 
-                    id="markdown-link" 
-                    checked={markdownWithLink}
-                    onCheckedChange={(checked: boolean) => setMarkdownWithLink(checked)}
-                    className="border-gray-300"
-                  />
-                  <Label htmlFor="markdown-link" className="text-sm text-gray-600 flex items-center gap-1">
-                    Link to blockchain explorer
-                    <span className="text-xs text-gray-400">(recommended)</span>
-                  </Label>
-                </div>
-                <CopyableInput
-                  value={
-                    markdownWithLink 
-                      ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
-                      : `![${selectedChain} Balance](${badgeUrl})`
-                  }
-                  className="bg-gray-50 border-gray-300"
-                />
-              </>
+              <CopyableInput
+                value={
+                  linkToBrowser 
+                    ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
+                    : `![${selectedChain} Balance](${badgeUrl})`
+                }
+                className="bg-gray-50 border-gray-300"
+              />
             ) : null}
             <p className="text-sm text-gray-500 text-center">
               {badgeUrl
@@ -416,28 +423,14 @@ export default function BadgeGenerator() {
             className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
           >
             {badgeUrl ? (
-              <>
-                <div className="flex items-center space-x-2 mb-2">
-                  <Checkbox 
-                    id="html-link" 
-                    checked={htmlWithLink}
-                    onCheckedChange={(checked: boolean) => setHtmlWithLink(checked)}
-                    className="border-gray-300"
-                  />
-                  <Label htmlFor="html-link" className="text-sm text-gray-600 flex items-center gap-1">
-                    Link to blockchain explorer
-                    <span className="text-xs text-gray-400">(recommended)</span>
-                  </Label>
-                </div>
-                <CopyableInput
-                  value={
-                    htmlWithLink
-                      ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
-                      : `<img src="${badgeUrl}" alt="${selectedChain} Balance">`
-                  }
-                  className="bg-gray-50 border-gray-300"
-                />
-              </>
+              <CopyableInput
+                value={
+                  linkToBrowser
+                    ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
+                    : `<img src="${badgeUrl}" alt="${selectedChain} Balance">`
+                }
+                className="bg-gray-50 border-gray-300"
+              />
             ) : null}
             <p className="text-sm text-gray-500 text-center">
               {badgeUrl
