@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/select";
 import { ChainSelector, Chain } from "./chain-selector";
 import { isValidBitcoinAddress, isValidEthereumAddress } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CopyableInput } from "@/components/ui/copyable-input";
 
 const BASE_URL = process.env.NODE_ENV === 'development' 
   ? 'http://localhost:8080' 
@@ -41,6 +43,8 @@ export default function BadgeGenerator() {
   const [btcNetwork, setBtcNetwork] = useState("mainnet");
   const [addressError, setAddressError] = useState<string>("");
   const [tokenAddressError, setTokenAddressError] = useState<string>("");
+  const [markdownWithLink, setMarkdownWithLink] = useState(true);
+  const [htmlWithLink, setHtmlWithLink] = useState(true);
 
   useEffect(() => {
     let isValid = true;
@@ -227,7 +231,7 @@ export default function BadgeGenerator() {
 
         <div className="space-y-2">
           <Label
-            htmlFor="address"
+            htmlFor="wallet_address"
             className="text-sm font-medium text-gray-700"
           >
             Wallet Address
@@ -235,13 +239,13 @@ export default function BadgeGenerator() {
           <div className="relative">
             <Wallet className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
             <Input
-              id="address"
+              id="wallet_address"
+              name="wallet_address"
               placeholder={`Enter ${selectedChain} address`}
               value={address}
+              autoComplete="eth-wallet eth-wallet-address wallet-address btc-address btc-wallet-address ethereum btc"
               onChange={(e) => setAddress(e.target.value)}
-              className={`pl-9 bg-white border-gray-300 ${
-                addressError ? "border-red-500" : ""
-              }`}
+              className={`pl-9 ${addressError ? "border-red-500" : ""}`}
             />
           </div>
           {addressError && (
@@ -268,7 +272,7 @@ export default function BadgeGenerator() {
         </div>
 
         <Tabs defaultValue="markdown" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-100">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100">
             <TabsTrigger
               value="markdown"
               className="data-[state=active]:bg-white"
@@ -281,21 +285,41 @@ export default function BadgeGenerator() {
             >
               HTML
             </TabsTrigger>
+            <TabsTrigger
+              value="image"
+              className="data-[state=active]:bg-white"
+            >
+              Image URL
+            </TabsTrigger>
           </TabsList>
           <TabsContent
             value="markdown"
             className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
           >
-            <Input
-              readOnly
-              value={
-                badgeUrl
-                  ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
-                  : ""
-              }
-              onClick={(e) => (e.target as HTMLInputElement).select()}
-              className="bg-gray-50 border-gray-300"
-            />
+            {badgeUrl ? (
+              <>
+                <div className="flex items-center space-x-2 mb-2">
+                  <Checkbox 
+                    id="markdown-link" 
+                    checked={markdownWithLink}
+                    onCheckedChange={(checked: boolean) => setMarkdownWithLink(checked)}
+                    className="border-gray-300"
+                  />
+                  <Label htmlFor="markdown-link" className="text-sm text-gray-600 flex items-center gap-1">
+                    Link to blockchain explorer
+                    <span className="text-xs text-gray-400">(recommended)</span>
+                  </Label>
+                </div>
+                <CopyableInput
+                  value={
+                    markdownWithLink 
+                      ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
+                      : `![${selectedChain} Balance](${badgeUrl})`
+                  }
+                  className="bg-gray-50 border-gray-300"
+                />
+              </>
+            ) : null}
             <p className="text-sm text-gray-500 text-center">
               {badgeUrl
                 ? "Click to copy the markdown code"
@@ -306,20 +330,50 @@ export default function BadgeGenerator() {
             value="html"
             className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
           >
-            <Input
-              readOnly
-              value={
-                badgeUrl
-                  ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
-                  : ""
-              }
-              onClick={(e) => (e.target as HTMLInputElement).select()}
-              className="bg-gray-50 border-gray-300"
-            />
+            {badgeUrl ? (
+              <>
+                <div className="flex items-center space-x-2 mb-2">
+                  <Checkbox 
+                    id="html-link" 
+                    checked={htmlWithLink}
+                    onCheckedChange={(checked: boolean) => setHtmlWithLink(checked)}
+                    className="border-gray-300"
+                  />
+                  <Label htmlFor="html-link" className="text-sm text-gray-600 flex items-center gap-1">
+                    Link to blockchain explorer
+                    <span className="text-xs text-gray-400">(recommended)</span>
+                  </Label>
+                </div>
+                <CopyableInput
+                  value={
+                    htmlWithLink
+                      ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
+                      : `<img src="${badgeUrl}" alt="${selectedChain} Balance">`
+                  }
+                  className="bg-gray-50 border-gray-300"
+                />
+              </>
+            ) : null}
             <p className="text-sm text-gray-500 text-center">
               {badgeUrl
                 ? "Click to copy the HTML code"
                 : "Enter an address to generate HTML"}
+            </p>
+          </TabsContent>
+          <TabsContent
+            value="image"
+            className="space-y-4 bg-white border border-gray-200 rounded-b-lg p-4"
+          >
+            {badgeUrl ? (
+              <CopyableInput
+                value={badgeUrl}
+                className="bg-gray-50 border-gray-300"
+              />
+            ) : null}
+            <p className="text-sm text-gray-500 text-center">
+              {badgeUrl
+                ? "Click to copy the direct image URL"
+                : "Enter an address to generate image URL"}
             </p>
           </TabsContent>
         </Tabs>
