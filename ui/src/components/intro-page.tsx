@@ -126,8 +126,8 @@ export default function IntroPage() {
 
       <div className="text-center text-sm text-muted-foreground">
         <p>
-          Badgify is an open-source project dedicated to making blockchain data
-          more accessible and visual
+          Badgify is a project dedicated to making blockchain data more
+          accessible and visual
         </p>
       </div>
     </div>
