@@ -477,12 +477,6 @@ export default function BadgeGenerator() {
             </p>
           </TabsContent>
         </Tabs>
-
-        <div className="text-center text-sm text-gray-500">
-          <p>
-            Badgify: Create professional cryptocurrency badges for your projects
-          </p>
-        </div>
       </CardContent>
     </Card>
   );
