@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import GitHubButton from "react-github-btn";
 
 export default function IntroPage() {
   return (
@@ -126,9 +127,19 @@ export default function IntroPage() {
 
       <div className="text-center text-sm text-muted-foreground">
         <p>
-          Badgify is a project dedicated to making blockchain data more
-          accessible and visual
+          Badgify is an open-source project dedicated to making blockchain data
+          more accessible and visual
         </p>
+        <br />
+        <GitHubButton
+          href="https://github.com/alisinabh/badgify"
+          data-color-scheme="no-preference: light; light: light; dark: dark;"
+          data-size="large"
+          data-show-count="true"
+          aria-label="Star alisinabh/badgify on GitHub"
+        >
+          Star
+        </GitHubButton>
       </div>
     </div>
   );
