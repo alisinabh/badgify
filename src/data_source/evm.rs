@@ -273,7 +273,7 @@ impl EvmDataSource {
         self.try_with_rpc_urls(chain_id, move |chain, rpc_url| {
             let predicate = predicate.clone();
             async move {
-                let provider = ProviderBuilder::default().on_http(rpc_url.parse()?).boxed();
+                let provider = ProviderBuilder::default().on_http(rpc_url.parse()?);
                 predicate(chain.clone(), Box::new(provider)).await
             }
         })
