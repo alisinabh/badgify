@@ -24,6 +24,7 @@ use super::{
 };
 
 const ETH_DECIMALS: u8 = 18;
+const QUERY_BLOCK: &str = "latest";
 
 sol! {
     #[sol(rpc)]
@@ -183,27 +184,36 @@ impl EvmDataSource {
             let balance_fut: Waiter<Bytes> = batch
                 .add_call(
                     "eth_call",
-                    &[TransactionRequest::default()
-                        .to(contract_address)
-                        .input(TransactionInput::from(balance_call.abi_encode()))],
+                    &(
+                        TransactionRequest::default()
+                            .to(contract_address)
+                            .input(TransactionInput::from(balance_call.abi_encode())),
+                        QUERY_BLOCK,
+                    ),
                 )
                 .unwrap();
 
             let decimals_fut: Waiter<Bytes> = batch
                 .add_call(
                     "eth_call",
-                    &[TransactionRequest::default()
-                        .to(contract_address)
-                        .input(TransactionInput::from(decimals_call.abi_encode()))],
+                    &(
+                        TransactionRequest::default()
+                            .to(contract_address)
+                            .input(TransactionInput::from(decimals_call.abi_encode())),
+                        QUERY_BLOCK,
+                    ),
                 )
                 .unwrap();
 
             let symbol_fut: Waiter<Bytes> = batch
                 .add_call(
                     "eth_call",
-                    &[TransactionRequest::default()
-                        .to(contract_address)
-                        .input(TransactionInput::from(symbol_call.abi_encode()))],
+                    &(
+                        TransactionRequest::default()
+                            .to(contract_address)
+                            .input(TransactionInput::from(symbol_call.abi_encode())),
+                        QUERY_BLOCK,
+                    ),
                 )
                 .unwrap();
 
