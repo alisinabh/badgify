@@ -13,14 +13,8 @@ use actix_web::{middleware::Logger, web, App, HttpServer};
 use data_source::{DataSource, SourceResponseWithMetadata};
 use query::Query;
 
-pub struct Executor {
+struct Executor {
     data_source: DataSource,
-}
-
-impl Default for Executor {
-    fn default() -> Self {
-        Self::new()
-    }
 }
 
 impl Executor {
