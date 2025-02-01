@@ -4,10 +4,10 @@ use actix_web::{get, http::header::LOCATION, web, HttpResponse, Responder};
 use alloy::primitives::U256;
 use bigdecimal::{BigDecimal, ParseBigDecimalError};
 use num::BigInt;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
-    badge::{shields_io::ShildsIoBadge, Badge, Logo},
+    badge::{shields_io_data::ShildsIoBadgeData, Badge, Logo},
     data_source::{SourceResponse, SourceResponseWithMetadata},
     Executor,
 };
@@ -15,7 +15,7 @@ use crate::{
 const DEFAULT_BELOW_THRESHOLD_COLOR: &str = "yellow";
 const DEFAULT_ABOVE_THRESHOLD_COLOR: &str = "blue";
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 struct BadgeQuery {
     color: Option<String>,
     label: Option<String>,
@@ -24,7 +24,28 @@ struct BadgeQuery {
 }
 
 #[get("/badge/{badge_query:.*}")]
-pub async fn badge(
+pub async fn badge_image(
+    badge_query: web::Path<String>,
+    query: web::Query<BadgeQuery>,
+) -> impl Responder {
+    let query_string = serde_urlencoded::to_string(&query.into_inner()).unwrap();
+    let badge_data_url = format!(
+        "https://badgify.io/badge_data/{}?{}",
+        badge_query, query_string
+    )
+    .trim_end_matches(|c| c == '?')
+    .to_string();
+
+    HttpResponse::TemporaryRedirect()
+        .insert_header((
+            LOCATION,
+            format!("https://img.shields.io/endpoint?url={}", badge_data_url),
+        ))
+        .finish()
+}
+
+#[get("/badge_data/{badge_query:.*}")]
+pub async fn badge_data_api(
     badge_query: web::Path<String>,
     executor: web::Data<Executor>,
     query: web::Query<BadgeQuery>,
@@ -64,10 +85,8 @@ pub fn render_failed_badge() -> HttpResponse {
 }
 
 pub fn render_badge(badge_data: Badge) -> HttpResponse {
-    let shields_io_badge: ShildsIoBadge = badge_data.into();
-    HttpResponse::TemporaryRedirect()
-        .insert_header((LOCATION, shields_io_badge.image_url))
-        .finish()
+    let shields_io_badge_data: ShildsIoBadgeData = badge_data.into();
+    HttpResponse::Ok().json(shields_io_badge_data)
 }
 
 fn parse_decimal(value: U256, decimals: u8) -> BigDecimal {

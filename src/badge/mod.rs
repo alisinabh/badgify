@@ -1,4 +1,5 @@
 pub mod shields_io;
+pub mod shields_io_data;
 
 use crate::data_source::SourceResponseWithMetadata;
 
