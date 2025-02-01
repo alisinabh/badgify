@@ -26,9 +26,9 @@ Visit [badgify.io](https://badgify.io) and follow these simple steps:
 
 ### Usage Examples
 
-Vitalk's ETH Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)](https://badgify.io/scanner/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045) [![ethereum Balance](https://badgify.io/badge/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)](https://badgify.io/scanner/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)
+Vitalk's ETH Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045?v=2)](https://badgify.io/scanner/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045) [![ethereum Balance](https://badgify.io/badge/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045?v=2)](https://badgify.io/scanner/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)
 
-Thether's Treasury USDT Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949?v=1)](https://badgify.io/scanner/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949)
+Tether's Treasury USDT Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949?v=2)](https://badgify.io/scanner/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949)
 
 Generate yours at [badgify.io](https://badgify.io/generator)
 
@@ -57,18 +57,21 @@ badgify/
 ### Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/badgify.git
 cd badgify
 ```
 
 2. Install frontend dependencies:
+
 ```bash
 cd ui
 pnpm install
 ```
 
 3. Build and run the development server:
+
 ```bash
 # Terminal 1 - Frontend
 cd ui
@@ -80,9 +83,8 @@ cargo run
 
 ## Contributing
 
-We welcome contributions to Badgify! Feel free to open Issues and/or Pull Requests if you want to add a feature 
+We welcome contributions to Badgify! Feel free to open Issues and/or Pull Requests if you want to add a feature
 or fix a bug.
-
 
 ## License
 
@@ -91,4 +93,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Acknowledgments
 
 - Built with [Rust](https://www.rust-lang.org/), [React](https://reactjs.org/), and [shadcn/ui](https://ui.shadcn.com/)
-- Special thanks to the blockchain community for their continued support 
+- Special thanks to the blockchain community for their continued support

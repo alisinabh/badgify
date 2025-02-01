@@ -30,11 +30,15 @@ pub struct ShildsIoBadgeData {
 impl From<Badge> for ShildsIoBadgeData {
     fn from(value: Badge) -> Self {
         let label = value.label.clone().unwrap_or_default();
+        let message = match value.suffix {
+            None => value.message,
+            Some(suffix) => format!("{} {}", value.message, suffix),
+        };
 
         ShildsIoBadgeData {
             schema_version: 1,
             label,
-            message: value.message,
+            message,
             color: Some(value.color.unwrap_or("blue".to_string())),
             label_color: value.label_color,
             is_error: value.is_error,
