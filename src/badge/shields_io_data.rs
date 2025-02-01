@@ -37,7 +37,7 @@ impl From<Badge> for ShildsIoBadgeData {
             message: value.message,
             color: Some(value.color.unwrap_or("blue".to_string())),
             label_color: value.label_color,
-            is_error: false,
+            is_error: value.is_error,
             named_logo: value.icon.map(from_badge_logo),
             logo_svg: None,
             logo_color: None,

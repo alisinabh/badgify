@@ -15,6 +15,7 @@ pub struct Badge {
     pub icon: Option<Logo>,
     pub message: String,
     pub suffix: Option<String>,
+    pub is_error: bool,
 }
 
 impl Badge {
@@ -26,6 +27,7 @@ impl Badge {
             icon: None,
             message: message.to_string(),
             suffix: None,
+            is_error: false,
         }
     }
 }

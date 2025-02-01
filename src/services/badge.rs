@@ -81,6 +81,7 @@ pub fn render_failed_badge() -> HttpResponse {
     let mut failure_badge = Badge::new("Failed");
     failure_badge.color = Some("red".to_string());
     failure_badge.label = Some("Badge".to_string());
+    failure_badge.is_error = true;
     render_badge(failure_badge)
 }
 
