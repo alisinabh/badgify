@@ -1,3 +1,4 @@
+use rand::seq::SliceRandom;
 use std::{collections::HashMap, error::Error, future::Future, sync::Arc};
 use tokio::sync::RwLock;
 
@@ -308,6 +309,7 @@ impl EvmDataSource {
         );
 
         let mut rpc_urls = chain.rpc.clone();
+        rpc_urls.shuffle(&mut rand::rng());
 
         if let Some(rpc_url) = self.get_good_rpc_url(chain_id).await {
             rpc_urls.insert(0, rpc_url);
@@ -348,12 +350,10 @@ impl EvmDataSource {
     }
 
     async fn get_good_rpc_url(&self, chain_id: ChainID) -> Option<String> {
-        let res = self
-            .last_known_good_rpc_urls
+        self.last_known_good_rpc_urls
             .read()
             .await
             .get(&chain_id)
-            .cloned();
-        res
+            .cloned()
     }
 }
