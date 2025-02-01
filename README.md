@@ -28,7 +28,7 @@ Visit [badgify.io](https://badgify.io) and follow these simple steps:
 
 Vitalk's ETH Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)](https://badgify.io/scanner/evm/1/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045) [![ethereum Balance](https://badgify.io/badge/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)](https://badgify.io/scanner/evm/8453/balance/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045)
 
-Thether's Treasury USDT Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949)](https://badgify.io/scanner/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949)
+Thether's Treasury USDT Balance: [![ethereum Balance](https://badgify.io/badge/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949?v=1)](https://badgify.io/scanner/evm/1/erc20_balance/0xdac17f958d2ee523a2206206994597c13d831ec7/0x5754284f345afc66a98fbB0a0Afe71e0F007B949)
 
 Generate yours at [badgify.io](https://badgify.io/generator)
 
