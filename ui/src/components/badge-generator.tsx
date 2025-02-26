@@ -51,6 +51,13 @@ export default function BadgeGenerator() {
   const [warningThreshold, setWarningThreshold] = useState<string>("");
   const [icon, setIcon] = useState<string>("");
 
+  const getNetworkDisplayName = () => {
+    if (selectedChain === 'ethereum') {
+      return evmChain?.name || 'Ethereum';
+    }
+    return `Bitcoin ${btcNetwork}`;
+  };
+
   useEffect(() => {
     let isValid = true;
 
@@ -385,10 +392,10 @@ export default function BadgeGenerator() {
               {badgeUrl ? (
                 linkToBrowser ? (
                   <a target="_blank" href={badgeLinkUrl}>
-                    <img src={badgeUrl} alt={`${selectedChain} Balance Badge`} />
+                    <img src={badgeUrl} alt={`${getNetworkDisplayName()} Balance Badge`} />
                   </a>
                 ) : (
-                  <img src={badgeUrl} alt={`${selectedChain} Balance Badge`} />
+                  <img src={badgeUrl} alt={`${getNetworkDisplayName()} Balance Badge`} />
                 )
               ) : (
                 <p className="text-gray-500">
@@ -428,8 +435,8 @@ export default function BadgeGenerator() {
               <CopyableInput
                 value={
                   linkToBrowser 
-                    ? `[![${selectedChain} Balance](${badgeUrl})](${badgeLinkUrl})`
-                    : `![${selectedChain} Balance](${badgeUrl})`
+                    ? `[![${getNetworkDisplayName()} Balance](${badgeUrl})](${badgeLinkUrl})`
+                    : `![${getNetworkDisplayName()} Balance](${badgeUrl})`
                 }
                 className="bg-gray-50 border-gray-300"
               />
@@ -448,8 +455,8 @@ export default function BadgeGenerator() {
               <CopyableInput
                 value={
                   linkToBrowser
-                    ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${selectedChain} Balance"></a>`
-                    : `<img src="${badgeUrl}" alt="${selectedChain} Balance">`
+                    ? `<a href="${badgeLinkUrl}" target="_blank"><img src="${badgeUrl}" alt="${getNetworkDisplayName()} Balance"></a>`
+                    : `<img src="${badgeUrl}" alt="${getNetworkDisplayName()} Balance">`
                 }
                 className="bg-gray-50 border-gray-300"
               />
